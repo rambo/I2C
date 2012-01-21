@@ -16,6 +16,7 @@ end	KEYWORD2
 timeOut	KEYWORD2
 setSpeed	KEYWORD2
 pullup	KEYWORD2
+scan	KEYWORD2
 write	KEYWORD2
 read	KEYWORD2
 beginTransmission	KEYWORD2
