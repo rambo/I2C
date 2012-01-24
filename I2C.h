@@ -5,7 +5,7 @@
           - Updated to make compatible with 8MHz clock frequency
   Rev 3.0 - January 9th, 2012
           - Modified library to be compatible with Arduino 1.0
-          - Changed argument type from uint8_t to uint8_t in pullUp(), 
+          - Changed argument type from boolean to uint8_t in pullUp(), 
             setSpeed() and receiveByte() functions for 1.0 compatability
           - Modified return values for timeout feature to report
             back where in the transmission the timeout occured.
@@ -117,7 +117,7 @@ class I2C
     uint8_t returnStatus;
     uint8_t nack;
     uint8_t data[MAX_BUFFER_SIZE];
-    static uint8_t uint8_tsAvailable;
+    static uint8_t bytesAvailable;
     static uint8_t bufferIndex;
     static uint8_t totalBytes;
     static uint16_t timeOutDelay;

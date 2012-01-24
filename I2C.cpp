@@ -5,7 +5,7 @@
           - Updated to make compatible with 8MHz clock frequency
   Rev 3.0 - January 9th, 2012
           - Modified library to be compatible with Arduino 1.0
-          - Changed argument type from uint8_t to uint8_t in pullUp(), 
+          - Changed argument type from boolean to uint8_t in pullUp(), 
             setSpeed() and receiveByte() functions for 1.0 compatability
           - Modified return values for timeout feature to report
             back where in the transmission the timeout occured.
@@ -53,7 +53,7 @@
 
 
 
-uint8_t I2C::uint8_tsAvailable = 0;
+uint8_t I2C::bytesAvailable = 0;
 uint8_t I2C::bufferIndex = 0;
 uint8_t I2C::totalBytes = 0;
 uint16_t I2C::timeOutDelay = 0;
@@ -239,18 +239,18 @@ uint8_t I2C::requestFrom(uint8_t address, uint8_t numberBytes)
 
 uint8_t I2C::available()
 {
-  return(uint8_tsAvailable);
+  return(bytesAvailable);
 }
 
 uint8_t I2C::receive()
 {
-  bufferIndex = totalBytes - uint8_tsAvailable;
-  if(!uint8_tsAvailable)
+  bufferIndex = totalBytes - bytesAvailable;
+  if(!bytesAvailable)
   {
     bufferIndex = 0;
     return(0);
   }
-  uint8_tsAvailable--;
+  bytesAvailable--;
   return(data[bufferIndex]);
 }
 
@@ -395,7 +395,7 @@ uint8_t I2C::read(int address, int numberBytes)
 
 uint8_t I2C::read(uint8_t address, uint8_t numberBytes)
 {
-  uint8_tsAvailable = 0;
+  bytesAvailable = 0;
   bufferIndex = 0;
   if(numberBytes == 0){numberBytes++;}
   nack = numberBytes - 1;
@@ -424,7 +424,7 @@ uint8_t I2C::read(uint8_t address, uint8_t numberBytes)
       if(returnStatus != MR_DATA_ACK){return(returnStatus);}
     }
     data[i] = TWDR;
-    uint8_tsAvailable = i+1;
+    bytesAvailable = i+1;
     totalBytes = i+1;
   }
   returnStatus = stop();
@@ -443,7 +443,7 @@ uint8_t I2C::read(int address, int registerAddress, int numberBytes)
 
 uint8_t I2C::read(uint8_t address, uint8_t registerAddress, uint8_t numberBytes)
 {
-  uint8_tsAvailable = 0;
+  bytesAvailable = 0;
   bufferIndex = 0;
   if(numberBytes == 0){numberBytes++;}
   nack = numberBytes - 1;
@@ -489,7 +489,7 @@ uint8_t I2C::read(uint8_t address, uint8_t registerAddress, uint8_t numberBytes)
       if(returnStatus != MR_DATA_ACK){return(returnStatus);}
     }
     data[i] = TWDR;
-    uint8_tsAvailable = i+1;
+    bytesAvailable = i+1;
     totalBytes = i+1;
   }
   returnStatus = stop();
@@ -503,7 +503,7 @@ uint8_t I2C::read(uint8_t address, uint8_t registerAddress, uint8_t numberBytes)
 
 uint8_t I2C::read(uint8_t address, uint8_t numberBytes, uint8_t *dataBuffer)
 {
-  uint8_tsAvailable = 0;
+  bytesAvailable = 0;
   bufferIndex = 0;
   if(numberBytes == 0){numberBytes++;}
   nack = numberBytes - 1;
@@ -531,7 +531,7 @@ uint8_t I2C::read(uint8_t address, uint8_t numberBytes, uint8_t *dataBuffer)
       if(returnStatus != MR_DATA_ACK){return(returnStatus);}
     }
     dataBuffer[i] = TWDR;
-    uint8_tsAvailable = i+1;
+    bytesAvailable = i+1;
     totalBytes = i+1;
   }
   returnStatus = stop();
@@ -545,7 +545,7 @@ uint8_t I2C::read(uint8_t address, uint8_t numberBytes, uint8_t *dataBuffer)
 
 uint8_t I2C::read(uint8_t address, uint8_t registerAddress, uint8_t numberBytes, uint8_t *dataBuffer)
 {
-  uint8_tsAvailable = 0;
+  bytesAvailable = 0;
   bufferIndex = 0;
   if(numberBytes == 0){numberBytes++;}
   nack = numberBytes - 1;
@@ -591,7 +591,7 @@ uint8_t I2C::read(uint8_t address, uint8_t registerAddress, uint8_t numberBytes,
       if(returnStatus != MR_DATA_ACK){return(returnStatus);}
     }
     dataBuffer[i] = TWDR;
-    uint8_tsAvailable = i+1;
+    bytesAvailable = i+1;
     totalBytes = i+1;
   }
   returnStatus = stop();
