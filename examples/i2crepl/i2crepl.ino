@@ -5,6 +5,18 @@
 char incoming_command[MAX_COMMAND_LENGTH+2]; //Reserve space for CRLF too.
 byte incoming_position;
 
+/**
+ * Basic idea is to have "REPL" for low-level I2C operations
+ *
+ * [ = start
+ * ] = stop
+ * a1 (hex numbers) are bytes
+ *
+ * On newline the line is parsed and corresponding actions taken, we need to know if sending a byte right after start since
+ * the slave address requires extra attention.
+ *
+ * At first simply usable with the arduino serial console, so no echo, later echo, backspace and maybe command history (RAM permitting)
+ */
 
 void setup()
 {
