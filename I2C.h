@@ -113,12 +113,12 @@ class I2C
     uint8_t read(uint8_t, uint8_t, uint8_t, uint8_t*);
 
 
-  private:
     uint8_t start();
     uint8_t sendAddress(uint8_t);
     uint8_t sendByte(uint8_t);
     uint8_t receiveByte(uint8_t);
     uint8_t stop();
+  private:
     void lockUp();
     uint8_t returnStatus;
     uint8_t nack;
