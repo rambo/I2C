@@ -12,7 +12,7 @@ byte incoming_position;
  * ] -> stop
  * a1 -> hex numbers are bytes
  * r -> read one byte
- * = -> address calculator (for example "=4 ")
+ * = -> address calculator (for example "=4")
  * S -> scan I2C address space
  *
  * On newline the line is parsed and corresponding actions taken, we need to know if sending a byte right after start since
@@ -20,17 +20,13 @@ byte incoming_position;
  *
  * Working:
  *  - start / stop
- *  - hex parsing (mostly) and sending
+ *  - hex parsing (mostly) and sending bytes
  *  - reading
  *  - address scan
  *
  * TODO:
- *  - fix the address calculator so that there is no need to add space after
- *  - fix hex parsing (there seems to be some bugs in it)
  *  - REPL so this can be used via plain serial port as well
  *  - Smarter number parsing (0x to signify hex, othewise suppose decimal)
- *  - address calculator for example "=" followed by hex prints the r and w 8-bit addresses for the device
- *  - scan command (no longer does scan on boot to save time)
  */
 
 void setup()
@@ -330,6 +326,7 @@ inline void process_command()
                             return;
                         }
                         I2c.scan();
+                        Serial.println("");
                         Serial.println("Scan done.");
                     }
                         break;
