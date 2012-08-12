@@ -11,15 +11,17 @@ byte incoming_position;
  * [ = start
  * ] = stop
  * a1 (hex numbers) are bytes
+ * r = read one byte
  *
  * On newline the line is parsed and corresponding actions taken, we need to know if sending a byte right after start since
  * the slave address requires extra attention.
  *
  * Working:
  *  - start / stop
- *  - hex parsing (mostly)
+ *  - hex parsing (mostly) and sending
  *
  * TODO:
+ *  - implement read
  *  - fix hex parsing for two-character values starting with 0 (it seems to fail)
  *  - REPL so this can be used via plain serial port as well
  *  - Smarter number parsing (0x to signify hex, othewise suppose decimal)
