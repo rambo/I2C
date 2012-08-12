@@ -183,6 +183,8 @@ void invalid_char(byte character, byte pos)
 inline void process_command()
 {
     char hexparsebuffer[5];
+    // Clear buffer
+    memset(hexparsebuffer, 0, sizeof(hexparsebuffer));
     volatile byte hexparsebuffer_i = 0;
     byte parser_state = p_idle;
     byte next_parser_state = p_idle; // might not be needed 
@@ -264,7 +266,7 @@ inline void process_command()
                     is_valid_char = true;
                     byte parsed_byte = parse_hex(hexparsebuffer);
                     // Clear buffer
-                    memset(hexparsebuffer, 0, 5);
+                    memset(hexparsebuffer, 0, sizeof(hexparsebuffer));
                     hexparsebuffer_i = 0;
                     // I2C status code
                     byte stat;
