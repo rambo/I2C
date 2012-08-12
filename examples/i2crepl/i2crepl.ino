@@ -12,7 +12,7 @@ byte incoming_position;
  * ] -> stop
  * a1 -> hex numbers are bytes
  * r -> read one byte
- * = -> address calculator (for example =04)
+ * = -> address calculator (for example "=4 ")
  * S -> scan I2C address space
  *
  * On newline the line is parsed and corresponding actions taken, we need to know if sending a byte right after start since
@@ -22,8 +22,10 @@ byte incoming_position;
  *  - start / stop
  *  - hex parsing (mostly) and sending
  *  - reading
+ *  - address scan
  *
  * TODO:
+ *  - fix the address calculator so that there is no need to add space after
  *  - fix hex parsing (there seems to be some bugs in it)
  *  - REPL so this can be used via plain serial port as well
  *  - Smarter number parsing (0x to signify hex, othewise suppose decimal)
@@ -184,6 +186,17 @@ inline void process_command()
             case calc_seen:
             {
                 prev_parser_state = parser_state;
+                if (is_hex_char(current_char))
+                {
+                    parser_state = in_hex;
+                    hexparsebuffer[hexparsebuffer_i++] = current_char; 
+                }
+                else
+                {
+                    Serial.print("calc_seen: ");
+                    invalid_char(current_char, i);
+                    return;
+                }
             }
                 break;
             case start_seen:
@@ -224,8 +237,10 @@ inline void process_command()
                 break;
             case in_hex:
             {
+                boolean is_valid_char = false;
                 if (is_hex_char(current_char))
                 {
+                    is_valid_char = true;
                     hexparsebuffer[hexparsebuffer_i++] = current_char;
                     if (hexparsebuffer_i > 2)
                     {
@@ -233,24 +248,39 @@ inline void process_command()
                         return;
                     }
                 }
-                else if (current_char == 0x20) // space
+                if (   current_char == 0x20 // space
+                    || (i == (maxsize-1)))  // end of string
                 {
+                    is_valid_char = true;
                     byte parsed_byte = parse_hex(&hexparsebuffer[0]);
                     byte stat;
-                    if (prev_parser_state == start_seen)
+                    boolean i2c_sent = true;
+                    switch (prev_parser_state)
                     {
-                        stat = I2c.sendAddress(parsed_byte);
-                        Serial.print("sendAddress");
+                        case calc_seen:
+                            i2c_sent = false;
+                            Serial.print("device 0x");
+                            Serial.print(parsed_byte, HEX);
+                            Serial.print(": read 0x");
+                            Serial.print(((parsed_byte << 1) | 0x1), HEX);
+                            Serial.print(" write 0x");
+                            Serial.println(((parsed_byte << 1) | 0x0), HEX);
+                            break;
+                        case start_seen:
+                            stat = I2c.sendAddress(parsed_byte);
+                            Serial.print("sendAddress");
+                            break;
+                        default:
+                            stat = I2c.sendByte(parsed_byte);
+                            Serial.print("sendByte");
                     }
-                    else
+                    if (i2c_sent)
                     {
-                        stat = I2c.sendByte(parsed_byte);
-                        Serial.print("sendByte");
+                        Serial.print("(0x");
+                        Serial.print(parsed_byte, HEX);
+                        Serial.print(") returned: ");
+                        Serial.println(stat, DEC);
                     }
-                    Serial.print("(0x");
-                    Serial.print(parsed_byte, HEX);
-                    Serial.print(") returned: ");
-                    Serial.println(stat, DEC);
                     // Clear buffer
                     memset(&hexparsebuffer, 0, sizeof(hexparsebuffer));
                     hexparsebuffer_i = 0;
@@ -258,7 +288,7 @@ inline void process_command()
                     prev_parser_state = parser_state;
                     parser_state = p_idle;
                 }
-                else
+                if (!is_valid_char)
                 {
                     Serial.print("in_hex: ");
                     invalid_char(current_char, i);
@@ -271,7 +301,14 @@ inline void process_command()
                 boolean is_valid_char = false;
                 switch (current_char)
                 {
+                    case 0x3d: // ASCII "="
+                    {
+                        is_valid_char = true;
+                        parser_state = calc_seen;
+                    }
+                        break;
                     case 0x53: // ASCII "S"
+                    {
                         is_valid_char = true;
                         if (prev_parser_state != p_idle)
                         {
@@ -280,6 +317,7 @@ inline void process_command()
                         }
                         I2c.scan();
                         Serial.println("Scan done.");
+                    }
                         break;
                     case 0x20: // space
                         is_valid_char = true;
