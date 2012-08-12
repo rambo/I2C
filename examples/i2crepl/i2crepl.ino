@@ -21,7 +21,7 @@ byte incoming_position;
  *  - hex parsing (mostly) and sending
  *
  * TODO:
- *  - implement read
+ *  - implement read (this is a bit complex as we need to know which of the read commands is last one so we can sen NACK instead of ACK to tell the slave to release the bus)
  *  - fix hex parsing for two-character values starting with 0 (it seems to fail)
  *  - REPL so this can be used via plain serial port as well
  *  - Smarter number parsing (0x to signify hex, othewise suppose decimal)
@@ -91,6 +91,7 @@ enum parser_states {
     stop_seen,
     in_hex,
     p_idle,
+    calc_seen,
 };
 
 inline boolean is_hex_char(byte current_char)
@@ -268,6 +269,14 @@ inline void process_command()
                         Serial.print("STOP returned ");
                         Serial.println(stat, DEC);
                         parser_state = stop_seen;
+                    }
+                        break;
+                    case 0x72: // ASCII "r", 
+                    case 0x52: // ASCII "R", read byte
+                    {
+                        // TODO: How to figure out the last read ?
+                        byte tmpbuffer;
+                        
                     }
                         break;
                 }

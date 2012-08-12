@@ -117,6 +117,7 @@ class I2C
     uint8_t sendAddress(uint8_t);
     uint8_t sendByte(uint8_t);
     uint8_t receiveByte(uint8_t);
+    uint8_t receiveByte(uint8_t, uint8_t*);
     uint8_t stop();
   private:
     void lockUp();

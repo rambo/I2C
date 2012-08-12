@@ -682,6 +682,16 @@ uint8_t I2C::receiveByte(uint8_t ack)
   return(TWI_STATUS); 
 }
 
+uint8_t I2C::receiveByte(uint8_t ack, uint8_t* target)
+{
+    uint8_t stat = I2C::receiveByte(ack);
+    if (stat == 0)
+    {
+        target = TWDR;
+    }
+    return stat;
+}
+
 uint8_t I2C::stop()
 {
   unsigned long startingTime = millis();
