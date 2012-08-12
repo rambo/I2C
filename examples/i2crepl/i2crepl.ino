@@ -8,10 +8,12 @@ byte incoming_position;
 /**
  * Basic idea is to have "REPL" for low-level I2C operations
  *
- * [ = start
- * ] = stop
- * a1 (hex numbers) are bytes
- * r = read one byte
+ * [ -> start
+ * ] -> stop
+ * a1 -> hex numbers are bytes
+ * r -> read one byte
+ * = -> address calculator (for example =04)
+ * S -> scan I2C address space
  *
  * On newline the line is parsed and corresponding actions taken, we need to know if sending a byte right after start since
  * the slave address requires extra attention.
@@ -93,6 +95,7 @@ enum parser_states {
     in_hex,
     p_idle,
     calc_seen,
+    scan_seen,
 };
 
 inline boolean is_hex_char(byte current_char)
@@ -178,6 +181,11 @@ inline void process_command()
         byte current_char = incoming_command[i];
         switch (parser_state)
         {
+            case calc_seen:
+            {
+                prev_parser_state = parser_state;
+            }
+                break;
             case start_seen:
             {
                 prev_parser_state = parser_state;
@@ -263,6 +271,16 @@ inline void process_command()
                 boolean is_valid_char = false;
                 switch (current_char)
                 {
+                    case 0x53: // ASCII "S"
+                        is_valid_char = true;
+                        if (prev_parser_state != p_idle)
+                        {
+                            Serial.println("Address scan cannot be done in the middle of I2C transaction");
+                            return;
+                        }
+                        I2c.scan();
+                        Serial.println("Scan done.");
+                        break;
                     case 0x20: // space
                         is_valid_char = true;
                         break;
