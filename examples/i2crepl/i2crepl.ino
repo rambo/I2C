@@ -152,11 +152,13 @@ inline int ardubus_hex2int(byte hexchar0, byte hexchar1, byte hexchar2, byte hex
 inline byte parse_hex(char *parsebuffer)
 {
     byte len = strlen(parsebuffer);
+    /*
     Serial.print("DEBUG: hexbuffer len=");
     Serial.println(len, DEC);
+    */
     if (len > 2)
     {
-        Serial.println(parsebuffer);
+        //Serial.println(parsebuffer);
         return 0xff;
     }
     if (len == 2)
@@ -181,7 +183,7 @@ void invalid_char(byte character, byte pos)
 inline void process_command()
 {
     char hexparsebuffer[5];
-    byte hexparsebuffer_i = 0;
+    volatile byte hexparsebuffer_i = 0;
     byte parser_state = p_idle;
     byte next_parser_state = p_idle; // might not be needed 
     byte prev_parser_state = p_idle; // might not be needed 
@@ -245,13 +247,6 @@ inline void process_command()
                 break;
             case in_hex:
             {
-                Serial.print("in_hex, hexparsebuffer: ");
-                Serial.println(hexparsebuffer);
-                Serial.print("i=");
-                Serial.print(i, DEC);
-                Serial.print(" maxsize=");
-                Serial.println(maxsize, DEC);
-
                 boolean is_valid_char = false;
                 if (is_hex_char(current_char))
                 {
@@ -269,12 +264,9 @@ inline void process_command()
                     is_valid_char = true;
                     byte parsed_byte = parse_hex(hexparsebuffer);
                     // Clear buffer
-                    //memset(&hexparsebuffer, 0, sizeof(hexparsebuffer));
                     memset(hexparsebuffer, 0, 5);
-                    Serial.print("in_hex, after clear, hexparsebuffer: ");
-                    Serial.println(hexparsebuffer);
                     hexparsebuffer_i = 0;
-                    // I2C statu
+                    // I2C status code
                     byte stat;
                     boolean i2c_sent = true;
                     switch (prev_parser_state)
