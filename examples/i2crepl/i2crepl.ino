@@ -15,7 +15,14 @@ byte incoming_position;
  * On newline the line is parsed and corresponding actions taken, we need to know if sending a byte right after start since
  * the slave address requires extra attention.
  *
- * At first simply usable with the arduino serial console, so no echo, later echo, backspace and maybe command history (RAM permitting)
+ * Working:
+ *  - start / stop
+ *  - hex parsing (mostly)
+ *
+ * TODO:
+ *  - fix hex parsing for two-character values starting with 0 (it seems to fail)
+ *  - REPL so this can be used via plain serial port as well
+ *  - Smarter number parsing (0x to signify hex, othewise suppose decimal)
  */
 
 void setup()
