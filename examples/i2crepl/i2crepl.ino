@@ -125,6 +125,11 @@ inline byte ardubus_hex2byte(byte hexchar)
     {
         return (hexchar - 0x41) + 10; 
     }
+    if (   0x60 < hexchar
+        && hexchar < 0x67) // a-f
+    {
+        return (hexchar - 0x61) + 10; 
+    }
     if (   0x2f < hexchar
         && hexchar < 0x3a) // 0-9
     {
@@ -147,9 +152,12 @@ inline int ardubus_hex2int(byte hexchar0, byte hexchar1, byte hexchar2, byte hex
 inline byte parse_hex(char *parsebuffer)
 {
     byte len = strlen(parsebuffer);
+    Serial.print("DEBUG: hexbuffer len=");
+    Serial.println(len, DEC);
     if (len > 2)
     {
-        return 0x0;
+        Serial.println(parsebuffer);
+        return 0xff;
     }
     if (len == 2)
     {
@@ -252,7 +260,12 @@ inline void process_command()
                     || (i == (maxsize-1)))  // end of string
                 {
                     is_valid_char = true;
-                    byte parsed_byte = parse_hex(&hexparsebuffer[0]);
+                    byte parsed_byte = parse_hex(hexparsebuffer);
+                    // Clear buffer
+                    //memset(&hexparsebuffer, 0, sizeof(hexparsebuffer));
+                    memset(hexparsebuffer, 0, 5);
+                    hexparsebuffer_i = 0;
+                    // I2C statu
                     byte stat;
                     boolean i2c_sent = true;
                     switch (prev_parser_state)
@@ -273,6 +286,7 @@ inline void process_command()
                         default:
                             stat = I2c.sendByte(parsed_byte);
                             Serial.print("sendByte");
+                            break;
                     }
                     if (i2c_sent)
                     {
@@ -281,9 +295,6 @@ inline void process_command()
                         Serial.print(") returned: ");
                         Serial.println(stat, DEC);
                     }
-                    // Clear buffer
-                    memset(&hexparsebuffer, 0, sizeof(hexparsebuffer));
-                    hexparsebuffer_i = 0;
                     // Return state to idle
                     prev_parser_state = parser_state;
                     parser_state = p_idle;
