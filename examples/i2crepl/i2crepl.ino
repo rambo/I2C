@@ -245,6 +245,9 @@ inline void process_command()
                 break;
             case in_hex:
             {
+                Serial.print("in_hex, hexparsebuffer: ");
+                Serial.println(hexparsebuffer);
+
                 boolean is_valid_char = false;
                 if (is_hex_char(current_char))
                 {
@@ -264,6 +267,8 @@ inline void process_command()
                     // Clear buffer
                     //memset(&hexparsebuffer, 0, sizeof(hexparsebuffer));
                     memset(hexparsebuffer, 0, 5);
+                    Serial.print("in_hex, after clear, hexparsebuffer: ");
+                    Serial.println(hexparsebuffer);
                     hexparsebuffer_i = 0;
                     // I2C statu
                     byte stat;
