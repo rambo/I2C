@@ -19,13 +19,14 @@ byte incoming_position;
  * Working:
  *  - start / stop
  *  - hex parsing (mostly) and sending
+ *  - reading
  *
  * TODO:
- *  - implement read (this is a bit complex as we need to know which of the read commands is last one so we can sen NACK instead of ACK to tell the slave to release the bus)
- *  - fix hex parsing for two-character values starting with 0 (it seems to fail)
+ *  - fix hex parsing (there seems to be some bugs in it)
  *  - REPL so this can be used via plain serial port as well
  *  - Smarter number parsing (0x to signify hex, othewise suppose decimal)
  *  - address calculator for example "=" followed by hex prints the r and w 8-bit addresses for the device
+ *  - scan command (no longer does scan on boot to save time)
  */
 
 void setup()
@@ -39,7 +40,7 @@ void setup()
     I2c.pullup(true);
 
     // Scan the bus
-    I2c.scan();
+    //I2c.scan();
     Serial.println("Remember that you need to send the 8-bit address (with R/W-bit set) when addressing a device");
     digitalWrite(13, LOW);
 }
@@ -152,6 +153,18 @@ inline byte parse_hex(char *parsebuffer)
     return ardubus_hex2byte(parsebuffer[0]);
 }
 
+void invalid_char(byte character, byte pos)
+{
+    Serial.print("Invalid character '");
+    Serial.write(character);
+    Serial.print("' (0x");
+    Serial.print(character, HEX);
+    Serial.print(") in position ");
+    Serial.print(pos, DEC);
+    Serial.println(" when parsing command");
+}
+
+
 inline void process_command()
 {
     char hexparsebuffer[5];
@@ -179,10 +192,8 @@ inline void process_command()
                 }
                 else
                 {
-                    // Invalid char
-                    Serial.print("Invalid character in position ");
-                    Serial.print(i, DEC);
-                    Serial.println(" when parsing command");
+                    Serial.print("start_seen: ");
+                    invalid_char(current_char, i);
                     return;
                 }
             }
@@ -197,10 +208,8 @@ inline void process_command()
                 }
                 else
                 {
-                    // Invalid char
-                    Serial.print("Invalid character in position ");
-                    Serial.print(i, DEC);
-                    Serial.println(" when parsing command");
+                    Serial.print("stop_seen: ");
+                    invalid_char(current_char, i);
                     return;
                 }
             }
@@ -243,20 +252,23 @@ inline void process_command()
                 }
                 else
                 {
-                    // Invalid char
-                    Serial.print("Invalid character in position ");
-                    Serial.print(i, DEC);
-                    Serial.println(" when parsing command");
+                    Serial.print("in_hex: ");
+                    invalid_char(current_char, i);
                     return;
                 }
             }
                 break;
             case p_idle:
             {
+                boolean is_valid_char = false;
                 switch (current_char)
                 {
+                    case 0x20: // space
+                        is_valid_char = true;
+                        break;
                     case 0x5b: // ASCII "[", our start signifier
                     {
+                        is_valid_char = true;
                         byte stat = I2c.start();
                         parser_state = start_seen;
                         Serial.print("START returned ");
@@ -265,6 +277,7 @@ inline void process_command()
                         break;
                     case 0x5d: // ASCII "]", our stop signifier
                     {
+                        is_valid_char = true;
                         byte stat = I2c.stop();
                         Serial.print("STOP returned ");
                         Serial.println(stat, DEC);
@@ -274,16 +287,60 @@ inline void process_command()
                     case 0x72: // ASCII "r", 
                     case 0x52: // ASCII "R", read byte
                     {
-                        // TODO: How to figure out the last read ?
-                        byte tmpbuffer;
-                        
+                        is_valid_char = true;
+                        // peek ahead to see if this was last r -command
+                        boolean is_last = true;
+                        byte peek_i = i+1;
+                        while (peek_i < maxsize)
+                        {
+                            switch (incoming_command[peek_i])
+                            {
+                                case 0x72: // ASCII "r", 
+                                case 0x52: // ASCII "R", read byte
+                                {
+                                    is_last = false;
+                                }
+                                    break;
+                                case 0x20: // space, command separator
+                                    // no-op
+                                    break;
+                                case 0x5b: // ASCII "[", our start signifier
+                                case 0x5d: // ASCII "]", our stop signifier
+                                    // no-ops too
+                                    break;
+                                default:
+                                    // Any other command is in the wrong(est) place
+                                    Serial.print("r lookahead: ");
+                                    invalid_char(incoming_command[peek_i], peek_i);
+                                    return;
+                                
+                            }
+                            if (!is_last)
+                            {
+                                break;
+                            }
+                            peek_i++;
+                        }
+                        uint8_t tmpbuffer;
+                        byte stat = I2c.receiveByte(!is_last, &tmpbuffer);
+                        Serial.print("read 0x");
+                        Serial.print(tmpbuffer, HEX);
+                        Serial.print(" stat=");
+                        Serial.println(stat, DEC);
                     }
                         break;
                 }
                 if (is_hex_char(current_char))
                 {
+                    is_valid_char = true;
                     parser_state = in_hex;
                     hexparsebuffer[hexparsebuffer_i++] = current_char; 
+                }
+                if (!is_valid_char)
+                {
+                    Serial.print("p_idle: ");
+                    invalid_char(current_char, i);
+                    return;
                 }
             }
                 break;
@@ -294,4 +351,6 @@ inline void process_command()
 void loop()
 {
     read_command_bytes();
+    digitalWrite(13, !digitalRead(13));
+    delay(20);
 }

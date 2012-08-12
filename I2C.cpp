@@ -682,14 +682,45 @@ uint8_t I2C::receiveByte(uint8_t ack)
   return(TWI_STATUS); 
 }
 
-uint8_t I2C::receiveByte(uint8_t ack, uint8_t* target)
+uint8_t I2C::receiveByte(uint8_t ack, uint8_t *target)
 {
     uint8_t stat = I2C::receiveByte(ack);
-    if (stat == 0)
+/*
+    if( i == nack )
     {
-        target = TWDR;
+      returnStatus = receiveByte(0);
+      if(returnStatus == 1){return(6);}
+
+      if(returnStatus != MR_DATA_NACK){return(returnStatus);}
     }
-    return stat;
+    else
+    {
+      returnStatus = receiveByte(1);
+      if(returnStatus == 1){return(6);}
+      if(returnStatus != MR_DATA_ACK){return(returnStatus);}
+    }
+*/
+    if (stat == 1)
+    {
+        return(6);
+    }
+    if (ack)
+    {
+        if(returnStatus != MR_DATA_ACK)
+        {
+            return(returnStatus);
+        }
+    }
+    else
+    {
+        if(returnStatus != MR_DATA_NACK)
+        {
+            return(returnStatus);
+        }
+    }
+    *target = TWDR;
+    // I suppose that if we get this far we're ok
+    return 0;
 }
 
 uint8_t I2C::stop()
