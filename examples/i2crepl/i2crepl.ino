@@ -70,7 +70,7 @@ inline void read_command_bytes()
             }
             process_command();
             // Clear the buffer and reset position to 0
-            memset(&incoming_command, 0, MAX_COMMAND_LENGTH+2);
+            memset(incoming_command, 0, MAX_COMMAND_LENGTH+2);
             incoming_position = 0;
             return;
         }
@@ -84,7 +84,7 @@ inline void read_command_bytes()
             Serial.print(incoming_position, DEC);
             Serial.println(" clearing buffers");
             
-            memset(&incoming_command, 0, MAX_COMMAND_LENGTH+2);
+            memset(incoming_command, 0, MAX_COMMAND_LENGTH+2);
             incoming_position = 0;
         }
     }
@@ -247,6 +247,10 @@ inline void process_command()
             {
                 Serial.print("in_hex, hexparsebuffer: ");
                 Serial.println(hexparsebuffer);
+                Serial.print("i=");
+                Serial.print(i, DEC);
+                Serial.print(" maxsize=");
+                Serial.println(maxsize, DEC);
 
                 boolean is_valid_char = false;
                 if (is_hex_char(current_char))
@@ -406,7 +410,7 @@ inline void process_command()
                 {
                     is_valid_char = true;
                     parser_state = in_hex;
-                    hexparsebuffer[hexparsebuffer_i++] = current_char; 
+                    i--; // muck i so we re-enter at some point to the hex parser
                 }
                 if (!is_valid_char)
                 {
