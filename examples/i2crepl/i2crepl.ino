@@ -25,6 +25,7 @@ byte incoming_position;
  *  - fix hex parsing for two-character values starting with 0 (it seems to fail)
  *  - REPL so this can be used via plain serial port as well
  *  - Smarter number parsing (0x to signify hex, othewise suppose decimal)
+ *  - address calculator for example "=" followed by hex prints the r and w 8-bit addresses for the device
  */
 
 void setup()
@@ -39,7 +40,7 @@ void setup()
 
     // Scan the bus
     I2c.scan();
-    Serial.println("Booted");
+    Serial.println("Remember that you need to send the 8-bit address (with R/W-bit set) when addressing a device");
     digitalWrite(13, LOW);
 }
 
