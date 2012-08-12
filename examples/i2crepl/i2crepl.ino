@@ -217,7 +217,7 @@ inline void process_command()
                 else if (is_hex_char(current_char)) // Allow also hex directly after start
                 {
                     parser_state = in_hex;
-                    hexparsebuffer[hexparsebuffer_i++] = current_char; 
+                    i--; // muck i so we re-enter at some point to the hex parser
                 }
                 else
                 {
