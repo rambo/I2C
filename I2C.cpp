@@ -158,7 +158,7 @@ void I2C::scan()
   uint16_t tempTime = timeOutDelay;
   timeOut(80);
   uint8_t totalDevicesFound = 0;
-  Serial.println("Scanning for devices...please wait");
+  Serial.println(F("Scanning for devices...please wait"));
   Serial.println();
   for(uint8_t s = 0; s <= 0x7F; s++)
   {
@@ -172,21 +172,21 @@ void I2C::scan()
     {
       if(returnStatus == 1)
       {
-        Serial.println("There is a problem with the bus, could not complete scan");
+        Serial.println(F("There is a problem with the bus, could not complete scan"));
         timeOutDelay = tempTime;
         return;
       }
     }
     else
     {
-      Serial.print("Found device at address - ");
-      Serial.print(" 0x");
+      Serial.print(F("Found device at address - "));
+      Serial.print(F(" 0x"));
       Serial.println(s,HEX);
       totalDevicesFound++;
     }
     stop();
   }
-  if(!totalDevicesFound){Serial.println("No devices found");}
+  if(!totalDevicesFound){Serial.println(F("No devices found"));}
   timeOutDelay = tempTime;
 }
 
