@@ -706,18 +706,23 @@ uint8_t I2C::receiveByte(uint8_t ack, uint8_t *target)
     }
     if (ack)
     {
-        if(returnStatus != MR_DATA_ACK)
+        if(stat != MR_DATA_ACK)
         {
-            return(returnStatus);
+            Serial.println(F("DEBUG I2C::receiveByte unexpected return, ACK expected"));
+            *target = 0x0;
+            return(stat);
         }
     }
     else
     {
-        if(returnStatus != MR_DATA_NACK)
+        if(stat != MR_DATA_NACK)
         {
-            return(returnStatus);
+            Serial.println(F("DEBUG I2C::receiveByte unexpected return, NACK expected"));
+            *target = 0x0;
+            return(stat);
         }
     }
+    Serial.println(F("DEBUG I2C::receiveByte ok"));
     *target = TWDR;
     // I suppose that if we get this far we're ok
     return 0;
