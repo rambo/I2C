@@ -41,7 +41,7 @@ void setup()
 
     // Scan the bus
     //I2c.scan();
-    Serial.println("Remember that you need to send the 8-bit address (with R/W-bit set) when addressing a device");
+    Serial.println(F("Remember that you need to send the 8-bit address (with R/W-bit set) when addressing a device"));
     digitalWrite(13, LOW);
 }
 
@@ -76,9 +76,9 @@ inline void read_command_bytes()
         if (incoming_position > MAX_COMMAND_LENGTH+2)
         {
             Serial.println(0x15); // NACK
-            Serial.print("PANIC: No end-of-line seen and incoming_position=");
+            Serial.print(F("PANIC: No end-of-line seen and incoming_position="));
             Serial.print(incoming_position, DEC);
-            Serial.println(" clearing buffers");
+            Serial.println(F(" clearing buffers"));
             
             memset(incoming_command, 0, MAX_COMMAND_LENGTH+2);
             incoming_position = 0;
@@ -149,7 +149,7 @@ inline byte parse_hex(char *parsebuffer)
 {
     byte len = strlen(parsebuffer);
     /*
-    Serial.print("DEBUG: hexbuffer len=");
+    Serial.print(F("DEBUG: hexbuffer len="));
     Serial.println(len, DEC);
     */
     if (len > 2)
@@ -166,13 +166,13 @@ inline byte parse_hex(char *parsebuffer)
 
 void invalid_char(byte character, byte pos)
 {
-    Serial.print("Invalid character '");
+    Serial.print(F("Invalid character '"));
     Serial.write(character);
-    Serial.print("' (0x");
+    Serial.print(F("' (0x"));
     Serial.print(character, HEX);
-    Serial.print(") in position ");
+    Serial.print(F(") in position "));
     Serial.print(pos, DEC);
-    Serial.println(" when parsing command");
+    Serial.println(F(" when parsing command"));
 }
 
 
@@ -201,7 +201,7 @@ inline void process_command()
                 }
                 else
                 {
-                    Serial.print("calc_seen: ");
+                    Serial.print(F("calc_seen: "));
                     invalid_char(current_char, i);
                     return;
                 }
@@ -221,7 +221,7 @@ inline void process_command()
                 }
                 else
                 {
-                    Serial.print("start_seen: ");
+                    Serial.print(F("start_seen: "));
                     invalid_char(current_char, i);
                     return;
                 }
@@ -237,7 +237,7 @@ inline void process_command()
                 }
                 else
                 {
-                    Serial.print("stop_seen: ");
+                    Serial.print(F("stop_seen: "));
                     invalid_char(current_char, i);
                     return;
                 }
@@ -252,7 +252,7 @@ inline void process_command()
                     hexparsebuffer[hexparsebuffer_i++] = current_char;
                     if (hexparsebuffer_i > 2)
                     {
-                        Serial.println("Can only have byte wide hex strings");
+                        Serial.println(F("Can only have byte wide hex strings"));
                         return;
                     }
                 }
@@ -271,27 +271,27 @@ inline void process_command()
                     {
                         case calc_seen:
                             i2c_sent = false;
-                            Serial.print("device 0x");
+                            Serial.print(F("device 0x"));
                             Serial.print(parsed_byte, HEX);
-                            Serial.print(": read 0x");
+                            Serial.print(F(": read 0x"));
                             Serial.print(((parsed_byte << 1) | 0x1), HEX);
-                            Serial.print(" write 0x");
+                            Serial.print(F(" write 0x"));
                             Serial.println(((parsed_byte << 1) | 0x0), HEX);
                             break;
                         case start_seen:
                             stat = I2c.sendAddress(parsed_byte);
-                            Serial.print("sendAddress");
+                            Serial.print(F("sendAddress"));
                             break;
                         default:
                             stat = I2c.sendByte(parsed_byte);
-                            Serial.print("sendByte");
+                            Serial.print(F("sendByte"));
                             break;
                     }
                     if (i2c_sent)
                     {
-                        Serial.print("(0x");
+                        Serial.print(F("(0x"));
                         Serial.print(parsed_byte, HEX);
-                        Serial.print(") returned: ");
+                        Serial.print(F(") returned: "));
                         Serial.println(stat, DEC);
                     }
                     // Return state to idle
@@ -300,7 +300,7 @@ inline void process_command()
                 }
                 if (!is_valid_char)
                 {
-                    Serial.print("in_hex: ");
+                    Serial.print(F("in_hex: "));
                     invalid_char(current_char, i);
                     return;
                 }
@@ -322,12 +322,12 @@ inline void process_command()
                         is_valid_char = true;
                         if (prev_parser_state != p_idle)
                         {
-                            Serial.println("Address scan cannot be done in the middle of I2C transaction");
+                            Serial.println(F("Address scan cannot be done in the middle of I2C transaction"));
                             return;
                         }
                         I2c.scan();
-                        Serial.println("");
-                        Serial.println("Scan done.");
+                        Serial.println(F(""));
+                        Serial.println(F("Scan done."));
                     }
                         break;
                     case 0x20: // space
@@ -338,7 +338,7 @@ inline void process_command()
                         is_valid_char = true;
                         byte stat = I2c.start();
                         parser_state = start_seen;
-                        Serial.print("START returned ");
+                        Serial.print(F("START returned "));
                         Serial.println(stat, DEC);
                     }
                         break;
@@ -346,7 +346,7 @@ inline void process_command()
                     {
                         is_valid_char = true;
                         byte stat = I2c.stop();
-                        Serial.print("STOP returned ");
+                        Serial.print(F("STOP returned "));
                         Serial.println(stat, DEC);
                         parser_state = stop_seen;
                     }
@@ -377,7 +377,7 @@ inline void process_command()
                                     break;
                                 default:
                                     // Any other command is in the wrong(est) place
-                                    Serial.print("r lookahead: ");
+                                    Serial.print(F("r lookahead: "));
                                     invalid_char(incoming_command[peek_i], peek_i);
                                     return;
                                 
@@ -390,9 +390,9 @@ inline void process_command()
                         }
                         uint8_t tmpbuffer;
                         byte stat = I2c.receiveByte(!is_last, &tmpbuffer);
-                        Serial.print("read 0x");
+                        Serial.print(F("read 0x"));
                         Serial.print(tmpbuffer, HEX);
-                        Serial.print(" stat=");
+                        Serial.print(F(" stat="));
                         Serial.println(stat, DEC);
                     }
                         break;
@@ -405,7 +405,7 @@ inline void process_command()
                 }
                 if (!is_valid_char)
                 {
-                    Serial.print("p_idle: ");
+                    Serial.print(F("p_idle: "));
                     invalid_char(current_char, i);
                     return;
                 }
