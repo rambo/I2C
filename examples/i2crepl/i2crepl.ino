@@ -373,7 +373,7 @@ inline void process_command()
                                     break;
                                 case 0x5b: // ASCII "[", our start signifier
                                 case 0x5d: // ASCII "]", our stop signifier
-                                    is_last = true;
+                                    peek_i = maxsize-1; // trigger break
                                     break;
                                 default:
                                     // Any other command is in the wrong(est) place
