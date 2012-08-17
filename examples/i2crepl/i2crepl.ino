@@ -373,7 +373,7 @@ inline void process_command()
                                     break;
                                 case 0x5b: // ASCII "[", our start signifier
                                 case 0x5d: // ASCII "]", our stop signifier
-                                    // no-ops too
+                                    is_last = true;
                                     break;
                                 default:
                                     // Any other command is in the wrong(est) place
