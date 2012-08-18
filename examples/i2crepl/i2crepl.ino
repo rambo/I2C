@@ -1,6 +1,6 @@
 // Get this from https://github.com/rambo/I2C
 #define I2C_DEVICE_DEBUG
-#include <I2C.h> // For some weird reason including this in the relevant .h file does not work
+#include <I2C.h>
 #define MAX_COMMAND_LENGTH 100 // null-terminated
 char incoming_command[MAX_COMMAND_LENGTH+2]; //Reserve space for CRLF too.
 byte incoming_position;
@@ -291,7 +291,7 @@ inline void process_command()
                     {
                         Serial.print(F("(0x"));
                         Serial.print(parsed_byte, HEX);
-                        Serial.print(F(") returned: 0x"));
+                        Serial.print(F("), stat=0x"));
                         Serial.println(stat, HEX);
                     }
                     // Return state to idle
@@ -338,7 +338,7 @@ inline void process_command()
                         is_valid_char = true;
                         byte stat = I2c.start();
                         parser_state = start_seen;
-                        Serial.print(F("START returned 0x"));
+                        Serial.print(F("START sent, stat=0x"));
                         Serial.println(stat, HEX);
                     }
                         break;
@@ -346,7 +346,7 @@ inline void process_command()
                     {
                         is_valid_char = true;
                         byte stat = I2c.stop();
-                        Serial.print(F("STOP returned 0x"));
+                        Serial.print(F("STOP sent, stat=0x"));
                         Serial.println(stat, HEX);
                         parser_state = stop_seen;
                     }
@@ -392,7 +392,7 @@ inline void process_command()
                         byte stat = I2c.receiveByte(!is_last, &tmpbuffer);
                         Serial.print(F("read 0x"));
                         Serial.print(tmpbuffer, HEX);
-                        Serial.print(F(" stat=0x"));
+                        Serial.print(F(", stat=0x"));
                         Serial.println(stat, HEX);
                     }
                         break;
