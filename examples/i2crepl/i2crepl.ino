@@ -291,8 +291,8 @@ inline void process_command()
                     {
                         Serial.print(F("(0x"));
                         Serial.print(parsed_byte, HEX);
-                        Serial.print(F(") returned: "));
-                        Serial.println(stat, DEC);
+                        Serial.print(F(") returned: 0x"));
+                        Serial.println(stat, HEX);
                     }
                     // Return state to idle
                     prev_parser_state = parser_state;
@@ -338,16 +338,16 @@ inline void process_command()
                         is_valid_char = true;
                         byte stat = I2c.start();
                         parser_state = start_seen;
-                        Serial.print(F("START returned "));
-                        Serial.println(stat, DEC);
+                        Serial.print(F("START returned 0x"));
+                        Serial.println(stat, HEX);
                     }
                         break;
                     case 0x5d: // ASCII "]", our stop signifier
                     {
                         is_valid_char = true;
                         byte stat = I2c.stop();
-                        Serial.print(F("STOP returned "));
-                        Serial.println(stat, DEC);
+                        Serial.print(F("STOP returned 0x"));
+                        Serial.println(stat, HEX);
                         parser_state = stop_seen;
                     }
                         break;
@@ -392,8 +392,8 @@ inline void process_command()
                         byte stat = I2c.receiveByte(!is_last, &tmpbuffer);
                         Serial.print(F("read 0x"));
                         Serial.print(tmpbuffer, HEX);
-                        Serial.print(F(" stat="));
-                        Serial.println(stat, DEC);
+                        Serial.print(F(" stat=0x"));
+                        Serial.println(stat, HEX);
                     }
                         break;
                 }
