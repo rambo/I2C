@@ -12,3 +12,46 @@ For devices that don't use de-facto standard register scheme you can use the low
     I2c.sendAddress(slave_addr);
     I2c.sendByte(my_byte);
     I2c.stop();
+    
+## Documentation
+
+### I2c.begin()
+<dl>
+<dt>Description:</dt>
+<dd>Enables the I2C hardware</dd>
+    
+<dt>Parameters:</dt>
+<dd>none</dd>
+
+<dt>Returns:</dt>
+<dd>none</dd>
+</dl>
+
+### I2c.end()
+<dl>
+<dt>Description:</dt>
+<dd>Disables the I2C hardware</dd>
+    
+<dt>Parameters:</dt>
+<dd>none</dd>
+
+<dt>Returns:</dt>
+<dd>none</dd>
+</dl>
+ 
+
+### I2c.setSpeed(fast)
+<dl>
+<dt>Description:</dt>
+<dd>Enables high speed mode (400kHz)</dd>
+    
+<dt>Parameters:</dt>
+<dd>
+<b>fast - <i>Boolean</i></b><br/>
+<i>True</i>: High Speed<br/>
+<i>False</i>: Low Speed<br/>
+</dd>
+
+<dt>Returns:</dt>
+<dd>none</dd>
+</dl> 
