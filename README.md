@@ -107,7 +107,12 @@ The amount of time to wait before timing out. Can range from 0 - 65535 milliseco
 ### I2c.write(address, registerAddress)
 <dl>
 <dt>Description:</dt>
-<dd>Initiate an I2C write operation with no data sent. Typically used to set the "pointer" to a register address</dd>
+<dd>
+    Initiate an I2C write operation with no data sent. Typically used to set the "pointer" to a register address
+    </br>
+    </br>
+    <i><b>NOTE:</b> For devices with 16-bit register addresses use <b>I2c.write16(address, registerAddress)</b>. It is identical except registerAddress is a uint16_t</i>
+    </dd>
     
 <dt>Parameters:</dt>
 <dd>
@@ -135,7 +140,10 @@ Address of the register you wish to access (as per the datasheet)</dd>
 ### I2c.write(address, registerAddress, data)
 <dl>
 <dt>Description:</dt>
-<dd>Initiate an I2C write operation, sending a single data byte. Typically used to send a single byte of data to a register address</dd>
+<dd>Initiate an I2C write operation, sending a single data byte. Typically used to send a single byte of data to a register address
+    </br>
+    </br>
+    <i><b>NOTE:</b> For devices with 16-bit register addresses use <b>I2c.write16(address, registerAddress, data)</b>. It is identical except registerAddress is a uint16_t</i></dd>
     
 <dt>Parameters:</dt>
 <dd>
@@ -168,7 +176,10 @@ A single byte of data to send</dd>
 ### I2c.write(address, registerAddress, \*data)
 <dl>
 <dt>Description:</dt>
-<dd>Initiate an I2C write operation, array of char. Typically used to send an array of char starting at registerAddress location.  As a side note there is no restriction on how many bytes may be sent unlike the Wire library which has a 32 byte restriction</dd>
+<dd>Initiate an I2C write operation, array of char. Typically used to send an array of char starting at registerAddress location.  As a side note there is no restriction on how many bytes may be sent unlike the Wire library which has a 32 byte restriction
+    </br>
+    </br>
+    <i><b>NOTE:</b> For devices with 16-bit register addresses use <b>I2c.write16(address, registerAddress, *data)</b>. It is identical except registerAddress is a uint16_t</i></dd>
     
 <dt>Parameters:</dt>
 <dd>
@@ -201,7 +212,10 @@ Array of characters</dd>
 ### I2c.write(address, registerAddress, \*data, numberBytes)
 <dl>
 <dt>Description:</dt>
-<dd>Initiate an I2C write operation, array of bytes. Typically used to send an array of bytes starting at registerAddress location. As a side note there is no restriction on how many bytes may be sent unlike the Wire library which has a 32 byte restriction</dd>
+<dd>Initiate an I2C write operation, array of bytes. Typically used to send an array of bytes starting at registerAddress location. As a side note there is no restriction on how many bytes may be sent unlike the Wire library which has a 32 byte restriction
+    </br>
+    </br>
+    <i><b>NOTE:</b> For devices with 16-bit register addresses use <b>I2c.write16(address, registerAddress, *data, numberBytes)</b>. It is identical except registerAddress is a uint16_t</i></dd>
     
 <dt>Parameters:</dt>
 <dd>
@@ -298,7 +312,10 @@ Unlike the Wire library the read operation will not return the number of bytes r
 ### I2c.read(address, registerAddress, numberBytes)
 <dl>
 <dt>Description:</dt>
-<dd>Initiate a write operation to set the pointer to the registerAddress, then sending a repeated start (not a stop then start) and store the number of bytes in an internal buffer.  The 32 byte size restriction is imposed for this function.  Data can be read out of the buffer using I2c.receive().</dd>
+<dd>Initiate a write operation to set the pointer to the registerAddress, then sending a repeated start (not a stop then start) and store the number of bytes in an internal buffer.  The 32 byte size restriction is imposed for this function.  Data can be read out of the buffer using I2c.receive().
+    </br>
+    </br>
+    <i><b>NOTE:</b> For devices with 16-bit register addresses use <b>I2c.read16(address, registerAddress, numberBytes)</b>. It is identical except registerAddress is a uint16_t</i></dd>
     
 <dt>Parameters:</dt>
 <dd>
@@ -332,7 +349,10 @@ Unlike the Wire library the read operation will not return the number of bytes r
 ### I2c.read(address, registerAddress, numberBytes, \*dataBuffer)
 <dl>
 <dt>Description:</dt>
-<dd>Initiate a write operation to set the pointer to the registerAddress, then sending a repeated start (not a stop then start) and store the number of bytes in the dataBuffer. As a side note there is no restriction on how many bytes may be received unlike the Wire library which has a 32 byte restriction</dd>
+<dd>Initiate a write operation to set the pointer to the registerAddress, then sending a repeated start (not a stop then start) and store the number of bytes in the dataBuffer. As a side note there is no restriction on how many bytes may be received unlike the Wire library which has a 32 byte restriction
+    </br>
+    </br>
+    <i><b>NOTE:</b> For devices with 16-bit register addresses use <b>I2c.read16(address, registerAddress, numberBytes, \*dataBuffer)</b>. It is identical except registerAddress is a uint16_t</i></dd>
     
 <dt>Parameters:</dt>
 <dd>
