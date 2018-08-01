@@ -53,7 +53,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#if(ARDUINO >= 100)
+#if (ARDUINO >= 100)
 #include <Arduino.h>
 #else
 #include <WProgram.h>
@@ -61,8 +61,6 @@
 
 #include <inttypes.h>
 #include "I2C.h"
-
-
 
 uint8_t I2C::bytesAvailable = 0;
 uint8_t I2C::bufferIndex = 0;
@@ -73,30 +71,27 @@ I2C::I2C()
 {
 }
 
-
 ////////////// Public Methods ////////////////////////////////////////
-
-
 
 void I2C::begin()
 {
-  #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) || defined(__AVR_ATmega328P__)
-    // activate internal pull-ups for twi
-    // as per note from atmega8 manual pg167
-    sbi(PORTC, 4);
-    sbi(PORTC, 5);
-  #else
-    // activate internal pull-ups for twi
-    // as per note from atmega128 manual pg204
-    sbi(PORTD, 0);
-    sbi(PORTD, 1);
-  #endif
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) || defined(__AVR_ATmega328P__)
+  // activate internal pull-ups for twi
+  // as per note from atmega8 manual pg167
+  sbi(PORTC, 4);
+  sbi(PORTC, 5);
+#else
+  // activate internal pull-ups for twi
+  // as per note from atmega128 manual pg204
+  sbi(PORTD, 0);
+  sbi(PORTD, 1);
+#endif
   // initialize twi prescaler and bit rate
   cbi(TWSR, TWPS0);
   cbi(TWSR, TWPS1);
   TWBR = ((F_CPU / 100000) - 16) / 2;
   // enable twi module and acks
-  TWCR = _BV(TWEN) | _BV(TWEA); 
+  TWCR = _BV(TWEN) | _BV(TWEA);
 }
 
 void I2C::end()
@@ -111,7 +106,7 @@ void I2C::timeOut(uint16_t _timeOut)
 
 void I2C::setSpeed(uint8_t _fast)
 {
-  if(!_fast)
+  if (!_fast)
   {
     TWBR = ((F_CPU / 100000) - 16) / 2;
   }
@@ -120,36 +115,36 @@ void I2C::setSpeed(uint8_t _fast)
     TWBR = ((F_CPU / 400000) - 16) / 2;
   }
 }
-  
+
 void I2C::pullup(uint8_t activate)
 {
-  if(activate)
+  if (activate)
   {
-    #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) || defined(__AVR_ATmega328P__)
-      // activate internal pull-ups for twi
-      // as per note from atmega8 manual pg167
-      sbi(PORTC, 4);
-      sbi(PORTC, 5);
-    #else
-      // activate internal pull-ups for twi
-      // as per note from atmega128 manual pg204
-      sbi(PORTD, 0);
-      sbi(PORTD, 1);
-    #endif
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) || defined(__AVR_ATmega328P__)
+    // activate internal pull-ups for twi
+    // as per note from atmega8 manual pg167
+    sbi(PORTC, 4);
+    sbi(PORTC, 5);
+#else
+    // activate internal pull-ups for twi
+    // as per note from atmega128 manual pg204
+    sbi(PORTD, 0);
+    sbi(PORTD, 1);
+#endif
   }
   else
   {
-    #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) || defined(__AVR_ATmega328P__)
-      // deactivate internal pull-ups for twi
-      // as per note from atmega8 manual pg167
-      cbi(PORTC, 4);
-      cbi(PORTC, 5);
-    #else
-      // deactivate internal pull-ups for twi
-      // as per note from atmega128 manual pg204
-      cbi(PORTD, 0);
-      cbi(PORTD, 1);
-    #endif
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) || defined(__AVR_ATmega328P__)
+    // deactivate internal pull-ups for twi
+    // as per note from atmega8 manual pg167
+    cbi(PORTC, 4);
+    cbi(PORTC, 5);
+#else
+    // deactivate internal pull-ups for twi
+    // as per note from atmega128 manual pg204
+    cbi(PORTD, 0);
+    cbi(PORTD, 1);
+#endif
   }
 }
 
@@ -160,17 +155,17 @@ void I2C::scan()
   uint8_t totalDevicesFound = 0;
   Serial.println(F("Scanning for devices...please wait"));
   Serial.println();
-  for(uint8_t s = 0; s <= 0x7F; s++)
+  for (uint8_t s = 0; s <= 0x7F; s++)
   {
     returnStatus = 0;
     returnStatus = start();
-    if(!returnStatus)
-    { 
+    if (!returnStatus)
+    {
       returnStatus = sendAddress(SLA_W(s));
     }
-    if(returnStatus)
+    if (returnStatus)
     {
-      if(returnStatus == 1)
+      if (returnStatus == 1)
       {
         Serial.println(F("There is a problem with the bus, could not complete scan"));
         timeOutDelay = tempTime;
@@ -181,34 +176,35 @@ void I2C::scan()
     {
       Serial.print(F("Found device at address - "));
       Serial.print(F(" 0x"));
-      Serial.println(s,HEX);
+      Serial.println(s, HEX);
       totalDevicesFound++;
     }
     stop();
   }
-  if(!totalDevicesFound){Serial.println(F("No devices found"));}
+  if (!totalDevicesFound)
+  {
+    Serial.println(F("No devices found"));
+  }
   timeOutDelay = tempTime;
 }
 
-
 uint8_t I2C::available()
 {
-  return(bytesAvailable);
+  return (bytesAvailable);
 }
 
 uint8_t I2C::receive()
 {
   bufferIndex = totalBytes - bytesAvailable;
-  if(!bytesAvailable)
+  if (!bytesAvailable)
   {
     bufferIndex = 0;
-    return(0);
+    return (0);
   }
   bytesAvailable--;
-  return(data[bufferIndex]);
+  return (data[bufferIndex]);
 }
 
-  
 /*return values for new functions that use the timeOut feature 
   will now return at what point in the transmission the timeout
   occurred. Looking at a full communication sequence between a 
@@ -226,8 +222,7 @@ uint8_t I2C::receive()
   All possible return values:
   0           Function executed with no errors
   1 - 7       Timeout occurred, see above list
-  8 - 0xFF    See datasheet for exact meaning */ 
-
+  8 - 0xFF    See datasheet for exact meaning */
 
 /////////////////////////////////////////////////////
 
@@ -235,326 +230,482 @@ uint8_t I2C::write(uint8_t address, uint8_t registerAddress)
 {
   returnStatus = 0;
   returnStatus = start();
-  if(returnStatus){return(returnStatus);}
-  returnStatus = sendAddress(SLA_W(address));
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(2);}
-    return(returnStatus);
+    return (returnStatus);
+  }
+  returnStatus = sendAddress(SLA_W(address));
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (2);
+    }
+    return (returnStatus);
   }
   returnStatus = sendByte(registerAddress);
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(3);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
   }
   returnStatus = stop();
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(7);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (7);
+    }
+    return (returnStatus);
   }
-  return(returnStatus);
+  return (returnStatus);
 }
 
 uint8_t I2C::write(int address, int registerAddress)
 {
-  return(write((uint8_t) address, (uint8_t) registerAddress));
+  return (write((uint8_t)address, (uint8_t)registerAddress));
 }
 
 uint8_t I2C::write(uint8_t address, uint8_t registerAddress, uint8_t data)
 {
   returnStatus = 0;
-  returnStatus = start(); 
-  if(returnStatus){return(returnStatus);}
-  returnStatus = sendAddress(SLA_W(address));
-  if(returnStatus)
+  returnStatus = start();
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(2);}
-    return(returnStatus);
+    return (returnStatus);
+  }
+  returnStatus = sendAddress(SLA_W(address));
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (2);
+    }
+    return (returnStatus);
   }
   returnStatus = sendByte(registerAddress);
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(3);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
   }
   returnStatus = sendByte(data);
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(3);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
   }
   returnStatus = stop();
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(7);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (7);
+    }
+    return (returnStatus);
   }
-  return(returnStatus);
+  return (returnStatus);
 }
 
 uint8_t I2C::write(int address, int registerAddress, int data)
 {
-  return(write((uint8_t) address, (uint8_t) registerAddress, (uint8_t) data));
+  return (write((uint8_t)address, (uint8_t)registerAddress, (uint8_t)data));
 }
 
 uint8_t I2C::write(uint8_t address, uint8_t registerAddress, char *data)
 {
   uint8_t bufferLength = strlen(data);
   returnStatus = 0;
-  returnStatus = write(address, registerAddress, (uint8_t*)data, bufferLength);
-  return(returnStatus);
+  returnStatus = write(address, registerAddress, (uint8_t *)data, bufferLength);
+  return (returnStatus);
 }
 
 uint8_t I2C::write(uint8_t address, uint8_t registerAddress, uint8_t *data, uint8_t numberBytes)
 {
   returnStatus = 0;
   returnStatus = start();
-  if(returnStatus){return(returnStatus);}
-  returnStatus = sendAddress(SLA_W(address));
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(2);}
-    return(returnStatus);
+    return (returnStatus);
+  }
+  returnStatus = sendAddress(SLA_W(address));
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (2);
+    }
+    return (returnStatus);
   }
   returnStatus = sendByte(registerAddress);
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(3);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
   }
   for (uint8_t i = 0; i < numberBytes; i++)
   {
     returnStatus = sendByte(data[i]);
-    if(returnStatus)
+    if (returnStatus)
+    {
+      if (returnStatus == 1)
       {
-        if(returnStatus == 1){return(3);}
-        return(returnStatus);
+        return (3);
       }
+      return (returnStatus);
+    }
   }
   returnStatus = stop();
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(7);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (7);
+    }
+    return (returnStatus);
   }
-  return(returnStatus);
+  return (returnStatus);
 }
 
 uint8_t I2C::read(int address, int numberBytes)
 {
-  return(read((uint8_t) address, (uint8_t) numberBytes));
+  return (read((uint8_t)address, (uint8_t)numberBytes));
 }
 
 uint8_t I2C::read(uint8_t address, uint8_t numberBytes)
 {
   bytesAvailable = 0;
   bufferIndex = 0;
-  if(numberBytes == 0){numberBytes++;}
+  if (numberBytes == 0)
+  {
+    numberBytes++;
+  }
   nack = numberBytes - 1;
   returnStatus = 0;
   returnStatus = start();
-  if(returnStatus){return(returnStatus);}
-  returnStatus = sendAddress(SLA_R(address));
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(5);}
-    return(returnStatus);
+    return (returnStatus);
   }
-  for(uint8_t i = 0; i < numberBytes; i++)
+  returnStatus = sendAddress(SLA_R(address));
+  if (returnStatus)
   {
-    if( i == nack )
+    if (returnStatus == 1)
+    {
+      return (5);
+    }
+    return (returnStatus);
+  }
+  for (uint8_t i = 0; i < numberBytes; i++)
+  {
+    if (i == nack)
     {
       returnStatus = receiveByte(0);
-      if(returnStatus == 1){return(6);}
+      if (returnStatus == 1)
+      {
+        return (6);
+      }
 
-      if(returnStatus != MR_DATA_NACK){return(returnStatus);}
+      if (returnStatus != MR_DATA_NACK)
+      {
+        return (returnStatus);
+      }
     }
     else
     {
       returnStatus = receiveByte(1);
-      if(returnStatus == 1){return(6);}
-      if(returnStatus != MR_DATA_ACK){return(returnStatus);}
+      if (returnStatus == 1)
+      {
+        return (6);
+      }
+      if (returnStatus != MR_DATA_ACK)
+      {
+        return (returnStatus);
+      }
     }
     data[i] = TWDR;
-    bytesAvailable = i+1;
-    totalBytes = i+1;
+    bytesAvailable = i + 1;
+    totalBytes = i + 1;
   }
   returnStatus = stop();
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(7);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (7);
+    }
+    return (returnStatus);
   }
-  return(returnStatus);
+  return (returnStatus);
 }
 
 uint8_t I2C::read(int address, int registerAddress, int numberBytes)
 {
-  return(read((uint8_t) address, (uint8_t) registerAddress, (uint8_t) numberBytes));
+  return (read((uint8_t)address, (uint8_t)registerAddress, (uint8_t)numberBytes));
 }
 
 uint8_t I2C::read(uint8_t address, uint8_t registerAddress, uint8_t numberBytes)
 {
   bytesAvailable = 0;
   bufferIndex = 0;
-  if(numberBytes == 0){numberBytes++;}
+  if (numberBytes == 0)
+  {
+    numberBytes++;
+  }
   nack = numberBytes - 1;
   returnStatus = 0;
   returnStatus = start();
-  if(returnStatus){return(returnStatus);}
-  returnStatus = sendAddress(SLA_W(address));
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(2);}
-    return(returnStatus);
+    return (returnStatus);
+  }
+  returnStatus = sendAddress(SLA_W(address));
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (2);
+    }
+    return (returnStatus);
   }
   returnStatus = sendByte(registerAddress);
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(3);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
   }
   returnStatus = start();
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(4);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (4);
+    }
+    return (returnStatus);
   }
   returnStatus = sendAddress(SLA_R(address));
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(5);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (5);
+    }
+    return (returnStatus);
   }
-  for(uint8_t i = 0; i < numberBytes; i++)
+  for (uint8_t i = 0; i < numberBytes; i++)
   {
-    if( i == nack )
+    if (i == nack)
     {
       returnStatus = receiveByte(0);
-      if(returnStatus == 1){return(6);}
-      if(returnStatus != MR_DATA_NACK){return(returnStatus);}
+      if (returnStatus == 1)
+      {
+        return (6);
+      }
+      if (returnStatus != MR_DATA_NACK)
+      {
+        return (returnStatus);
+      }
     }
     else
     {
       returnStatus = receiveByte(1);
-      if(returnStatus == 1){return(6);}
-      if(returnStatus != MR_DATA_ACK){return(returnStatus);}
+      if (returnStatus == 1)
+      {
+        return (6);
+      }
+      if (returnStatus != MR_DATA_ACK)
+      {
+        return (returnStatus);
+      }
     }
     data[i] = TWDR;
-    bytesAvailable = i+1;
-    totalBytes = i+1;
+    bytesAvailable = i + 1;
+    totalBytes = i + 1;
   }
   returnStatus = stop();
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(7);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (7);
+    }
+    return (returnStatus);
   }
-  return(returnStatus);
+  return (returnStatus);
 }
 
 uint8_t I2C::read(uint8_t address, uint8_t numberBytes, uint8_t *dataBuffer)
 {
   bytesAvailable = 0;
   bufferIndex = 0;
-  if(numberBytes == 0){numberBytes++;}
+  if (numberBytes == 0)
+  {
+    numberBytes++;
+  }
   nack = numberBytes - 1;
   returnStatus = 0;
   returnStatus = start();
-  if(returnStatus){return(returnStatus);}
-  returnStatus = sendAddress(SLA_R(address));
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(5);}
-    return(returnStatus);
+    return (returnStatus);
   }
-  for(uint8_t i = 0; i < numberBytes; i++)
+  returnStatus = sendAddress(SLA_R(address));
+  if (returnStatus)
   {
-    if( i == nack )
+    if (returnStatus == 1)
+    {
+      return (5);
+    }
+    return (returnStatus);
+  }
+  for (uint8_t i = 0; i < numberBytes; i++)
+  {
+    if (i == nack)
     {
       returnStatus = receiveByte(0);
-      if(returnStatus == 1){return(6);}
-      if(returnStatus != MR_DATA_NACK){return(returnStatus);}
+      if (returnStatus == 1)
+      {
+        return (6);
+      }
+      if (returnStatus != MR_DATA_NACK)
+      {
+        return (returnStatus);
+      }
     }
     else
     {
       returnStatus = receiveByte(1);
-      if(returnStatus == 1){return(6);}
-      if(returnStatus != MR_DATA_ACK){return(returnStatus);}
+      if (returnStatus == 1)
+      {
+        return (6);
+      }
+      if (returnStatus != MR_DATA_ACK)
+      {
+        return (returnStatus);
+      }
     }
     dataBuffer[i] = TWDR;
-    bytesAvailable = i+1;
-    totalBytes = i+1;
+    bytesAvailable = i + 1;
+    totalBytes = i + 1;
   }
   returnStatus = stop();
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(7);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (7);
+    }
+    return (returnStatus);
   }
-  return(returnStatus);
+  return (returnStatus);
 }
 
 uint8_t I2C::read(uint8_t address, uint8_t registerAddress, uint8_t numberBytes, uint8_t *dataBuffer)
 {
   bytesAvailable = 0;
   bufferIndex = 0;
-  if(numberBytes == 0){numberBytes++;}
+  if (numberBytes == 0)
+  {
+    numberBytes++;
+  }
   nack = numberBytes - 1;
   returnStatus = 0;
   returnStatus = start();
-  if(returnStatus){return(returnStatus);}
-  returnStatus = sendAddress(SLA_W(address));
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(2);}
-    return(returnStatus);
+    return (returnStatus);
+  }
+  returnStatus = sendAddress(SLA_W(address));
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (2);
+    }
+    return (returnStatus);
   }
   returnStatus = sendByte(registerAddress);
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(3);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
   }
   returnStatus = start();
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(4);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (4);
+    }
+    return (returnStatus);
   }
   returnStatus = sendAddress(SLA_R(address));
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(5);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (5);
+    }
+    return (returnStatus);
   }
-  for(uint8_t i = 0; i < numberBytes; i++)
+  for (uint8_t i = 0; i < numberBytes; i++)
   {
-    if( i == nack )
+    if (i == nack)
     {
       returnStatus = receiveByte(0);
-      if(returnStatus == 1){return(6);}
-      if(returnStatus != MR_DATA_NACK){return(returnStatus);}
+      if (returnStatus == 1)
+      {
+        return (6);
+      }
+      if (returnStatus != MR_DATA_NACK)
+      {
+        return (returnStatus);
+      }
     }
     else
     {
       returnStatus = receiveByte(1);
-      if(returnStatus == 1){return(6);}
-      if(returnStatus != MR_DATA_ACK){return(returnStatus);}
+      if (returnStatus == 1)
+      {
+        return (6);
+      }
+      if (returnStatus != MR_DATA_ACK)
+      {
+        return (returnStatus);
+      }
     }
     dataBuffer[i] = TWDR;
-    bytesAvailable = i+1;
-    totalBytes = i+1;
+    bytesAvailable = i + 1;
+    totalBytes = i + 1;
   }
   returnStatus = stop();
-  if(returnStatus)
+  if (returnStatus)
   {
-    if(returnStatus == 1){return(7);}
-    return(returnStatus);
+    if (returnStatus == 1)
+    {
+      return (7);
+    }
+    return (returnStatus);
   }
-  return(returnStatus);
+  return (returnStatus);
 }
 
 ////////// 16-Bit Methods ///////////
@@ -943,176 +1094,185 @@ uint8_t I2C::read16(uint8_t address, uint16_t registerAddress, uint8_t numberByt
 uint8_t I2C::start()
 {
   unsigned long startingTime = millis();
-  TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
-  while (!(TWCR & (1<<TWINT)))
+  TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
+  while (!(TWCR & (1 << TWINT)))
   {
-    if(!timeOutDelay){continue;}
-    if((millis() - startingTime) >= timeOutDelay)
+    if (!timeOutDelay)
+    {
+      continue;
+    }
+    if ((millis() - startingTime) >= timeOutDelay)
     {
       lockUp();
-      return(1);
+      return (1);
     }
-       
   }
   if ((TWI_STATUS == START) || (TWI_STATUS == REPEATED_START))
   {
-    return(0);
+    return (0);
   }
   if (TWI_STATUS == LOST_ARBTRTN)
   {
     uint8_t bufferedStatus = TWI_STATUS;
     lockUp();
-    return(bufferedStatus);
+    return (bufferedStatus);
   }
-  return(TWI_STATUS);
+  return (TWI_STATUS);
 }
 
 uint8_t I2C::sendAddress(uint8_t i2cAddress)
 {
   TWDR = i2cAddress;
   unsigned long startingTime = millis();
-  TWCR = (1<<TWINT) | (1<<TWEN);
-  while (!(TWCR & (1<<TWINT)))
+  TWCR = (1 << TWINT) | (1 << TWEN);
+  while (!(TWCR & (1 << TWINT)))
   {
-    if(!timeOutDelay){continue;}
-    if((millis() - startingTime) >= timeOutDelay)
+    if (!timeOutDelay)
+    {
+      continue;
+    }
+    if ((millis() - startingTime) >= timeOutDelay)
     {
       lockUp();
-      return(1);
+      return (1);
     }
-       
   }
   if ((TWI_STATUS == MT_SLA_ACK) || (TWI_STATUS == MR_SLA_ACK))
   {
-    return(0);
+    return (0);
   }
   uint8_t bufferedStatus = TWI_STATUS;
   if ((TWI_STATUS == MT_SLA_NACK) || (TWI_STATUS == MR_SLA_NACK))
   {
     stop();
-    return(bufferedStatus);
+    return (bufferedStatus);
   }
   else
   {
     lockUp();
-    return(bufferedStatus);
-  } 
+    return (bufferedStatus);
+  }
 }
 
 uint8_t I2C::sendByte(uint8_t i2cData)
 {
   TWDR = i2cData;
   unsigned long startingTime = millis();
-  TWCR = (1<<TWINT) | (1<<TWEN);
-  while (!(TWCR & (1<<TWINT)))
+  TWCR = (1 << TWINT) | (1 << TWEN);
+  while (!(TWCR & (1 << TWINT)))
   {
-    if(!timeOutDelay){continue;}
-    if((millis() - startingTime) >= timeOutDelay)
+    if (!timeOutDelay)
+    {
+      continue;
+    }
+    if ((millis() - startingTime) >= timeOutDelay)
     {
       lockUp();
-      return(1);
+      return (1);
     }
-       
   }
   if (TWI_STATUS == MT_DATA_ACK)
   {
-    return(0);
+    return (0);
   }
   uint8_t bufferedStatus = TWI_STATUS;
   if (TWI_STATUS == MT_DATA_NACK)
   {
     stop();
-    return(bufferedStatus);
+    return (bufferedStatus);
   }
   else
   {
     lockUp();
-    return(bufferedStatus);
-  } 
+    return (bufferedStatus);
+  }
 }
 
 uint8_t I2C::receiveByte(uint8_t ack)
 {
   unsigned long startingTime = millis();
-  if(ack)
+  if (ack)
   {
-    TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWEA);
-
+    TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWEA);
   }
   else
   {
-    TWCR = (1<<TWINT) | (1<<TWEN);
+    TWCR = (1 << TWINT) | (1 << TWEN);
   }
-  while (!(TWCR & (1<<TWINT)))
+  while (!(TWCR & (1 << TWINT)))
   {
-    if(!timeOutDelay){continue;}
-    if((millis() - startingTime) >= timeOutDelay)
+    if (!timeOutDelay)
+    {
+      continue;
+    }
+    if ((millis() - startingTime) >= timeOutDelay)
     {
       lockUp();
-      return(1);
+      return (1);
     }
   }
   if (TWI_STATUS == LOST_ARBTRTN)
   {
     uint8_t bufferedStatus = TWI_STATUS;
     lockUp();
-    return(bufferedStatus);
+    return (bufferedStatus);
   }
-  return(TWI_STATUS); 
+  return (TWI_STATUS);
 }
 
 uint8_t I2C::receiveByte(uint8_t ack, uint8_t *target)
 {
-    uint8_t stat = I2C::receiveByte(ack);
-    if (stat == 1)
+  uint8_t stat = I2C::receiveByte(ack);
+  if (stat == 1)
+  {
+    return (6);
+  }
+  if (ack)
+  {
+    if (stat != MR_DATA_ACK)
     {
-        return(6);
+      *target = 0x0;
+      return (stat);
     }
-    if (ack)
+  }
+  else
+  {
+    if (stat != MR_DATA_NACK)
     {
-        if(stat != MR_DATA_ACK)
-        {
-            *target = 0x0;
-            return(stat);
-        }
+      *target = 0x0;
+      return (stat);
     }
-    else
-    {
-        if(stat != MR_DATA_NACK)
-        {
-            *target = 0x0;
-            return(stat);
-        }
-    }
-    *target = TWDR;
-    // I suppose that if we get this far we're ok
-    return 0;
+  }
+  *target = TWDR;
+  // I suppose that if we get this far we're ok
+  return 0;
 }
 
 uint8_t I2C::stop()
 {
   unsigned long startingTime = millis();
-  TWCR = (1<<TWINT)|(1<<TWEN)| (1<<TWSTO);
-  while ((TWCR & (1<<TWSTO)))
+  TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
+  while ((TWCR & (1 << TWSTO)))
   {
-    if(!timeOutDelay){continue;}
-    if((millis() - startingTime) >= timeOutDelay)
+    if (!timeOutDelay)
+    {
+      continue;
+    }
+    if ((millis() - startingTime) >= timeOutDelay)
     {
       lockUp();
-      return(1);
+      return (1);
     }
-       
   }
-  return(0);
+  return (0);
 }
 
 /////////////// Private Methods ////////////////////////////////////////
 
 void I2C::lockUp()
 {
-  TWCR = 0; //releases SDA and SCL lines to high impedance
-  TWCR = _BV(TWEN) | _BV(TWEA); //reinitialize TWI 
+  TWCR = 0;                     //releases SDA and SCL lines to high impedance
+  TWCR = _BV(TWEN) | _BV(TWEA); //reinitialize TWI
 }
 
 I2C I2c = I2C();
-
