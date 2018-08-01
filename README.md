@@ -8,11 +8,12 @@ On most Arduino boards, SDA (data line) is on analog input pin 4, and SCL (clock
 
 For devices that don't use de-facto standard register scheme you can use the low-level methods directly
 
-    I2c.start();
-    I2c.sendAddress(slave_addr);
-    I2c.sendByte(my_byte);
-    I2c.stop();
-    
+    I2c._start();
+    I2c._sendAddress(slave_addr);
+    I2c._sendByte(my_byte);
+    I2c._stop();
+
+For more details see the documentation below, section titled: Low-level Methods
 ## Documentation
 
 ### I2c.begin()
