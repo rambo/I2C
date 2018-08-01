@@ -112,7 +112,18 @@ class I2C
     uint8_t read(uint8_t, uint8_t, uint8_t*);
     uint8_t read(uint8_t, uint8_t, uint8_t, uint8_t*);
 
+    //These functions will be used to write to Slaves that take 16-bit addresses
+    uint8_t write16(uint8_t, uint16_t);
+    uint8_t write16(uint8_t, uint16_t, uint8_t);
+    uint8_t write16(uint8_t, uint16_t, char*);
+    uint8_t write16(uint8_t, uint16_t, uint8_t*, uint8_t);
+  //These functions will be used to read from Slaves that take 16-bit addresses
+    uint8_t read16(uint8_t, uint16_t);
+    uint8_t read16(uint8_t, uint16_t, uint8_t);
+    uint8_t read16(uint8_t, uint16_t, uint8_t*);
+    uint8_t read16(uint8_t, uint16_t, uint8_t, uint8_t*);
 
+    //Low-level methods
     uint8_t start();
     uint8_t sendAddress(uint8_t);
     uint8_t sendByte(uint8_t);
