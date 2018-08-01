@@ -76,7 +76,7 @@ For devices that don't use de-facto standard register scheme you can use the low
 ### I2c.timeOut(timeOut)
 <dl>
 <dt>Description:</dt>
-<dd> Allows the user to program a time out limit to prevent and recover from I2C bus lockups.  I2C bus lockups have a tendency to freeze a program which typically requires a power cycle to restart your progrm. This allows the user to define a time out in which the I2C will release itself and reinitialize and continue on with the next function.  Setting the value to zero will disable the function. On a side note, be careful with setting too low a value because some devices support clock stretching which can increase the time before an acknowledgement is sent which could be misconstrued as a lockup.
+<dd> Allows the user to program a time out limit to prevent and recover from I2C bus lockups.  I2C bus lockups have a tendency to freeze a program which typically requires a power cycle to restart your program. This allows the user to define a time out in which the I2C will release itself and reinitialize and continue on with the next function.  Setting the value to zero will disable the function. On a side note, be careful with setting too low a value because some devices support clock stretching which can increase the time before an acknowledgement is sent which could be misconstrued as a lockup.
     
 If a lock up occurs the returned parameters from Read and/or Writes will contain a 1.</dd>
     
@@ -107,7 +107,7 @@ The amount of time to wait before timing out. Can range from 0 - 65535 milliseco
 ### I2c.write(address, registerAddress)
 <dl>
 <dt>Description:</dt>
-<dd>Initate an I2C write operation with no data sent. Typically used to set the "pointer" to a register address</dd>
+<dd>Initiate an I2C write operation with no data sent. Typically used to set the "pointer" to a register address</dd>
     
 <dt>Parameters:</dt>
 <dd>
@@ -135,7 +135,7 @@ Address of the register you wish to access (as per the datasheet)</dd>
 ### I2c.write(address, registerAddress, data)
 <dl>
 <dt>Description:</dt>
-<dd>Initate an I2C write operation,sending a single data byte. Typically used to send a single byte of data to a register address</dd>
+<dd>Initiate an I2C write operation, sending a single data byte. Typically used to send a single byte of data to a register address</dd>
     
 <dt>Parameters:</dt>
 <dd>
@@ -168,7 +168,7 @@ A single byte of data to send</dd>
 ### I2c.write(address, registerAddress, \*data)
 <dl>
 <dt>Description:</dt>
-<dd>Initate an I2C write operation, array of char. Typically used to send an array of char starting at registerAddress location.  As a side note there is no restriction on how many bytes may be sent unlike the Wire library which has a 32 byte restriction</dd>
+<dd>Initiate an I2C write operation, array of char. Typically used to send an array of char starting at registerAddress location.  As a side note there is no restriction on how many bytes may be sent unlike the Wire library which has a 32 byte restriction</dd>
     
 <dt>Parameters:</dt>
 <dd>
@@ -201,7 +201,7 @@ Array of characters</dd>
 ### I2c.write(address, registerAddress, \*data, numberBytes)
 <dl>
 <dt>Description:</dt>
-<dd>Initate an I2C write operation, array of bytes. Typically used to send an array of bytes starting at registerAddress location. As a side note there is no restriction on how many bytes may be sent unlike the Wire library which has a 32 byte restriction</dd>
+<dd>Initiate an I2C write operation, array of bytes. Typically used to send an array of bytes starting at registerAddress location. As a side note there is no restriction on how many bytes may be sent unlike the Wire library which has a 32 byte restriction</dd>
     
 <dt>Parameters:</dt>
 <dd>
@@ -332,7 +332,7 @@ Unlike the Wire library the read operation will not return the number of bytes r
 ### I2c.read(address, registerAddress, numberBytes, \*dataBuffer)
 <dl>
 <dt>Description:</dt>
-<dd>Initiate a write operation to set the pointer to the registerAddress, then sending a repeated start (not a stop then sta  and store the number of bytes in the dataBuffer. As a side note there is no restriction on how many bytes may be received unlike the Wire library which has a 32 byte restriction</dd>
+<dd>Initiate a write operation to set the pointer to the registerAddress, then sending a repeated start (not a stop then start) and store the number of bytes in the dataBuffer. As a side note there is no restriction on how many bytes may be received unlike the Wire library which has a 32 byte restriction</dd>
     
 <dt>Parameters:</dt>
 <dd>
@@ -346,7 +346,7 @@ Starting register address to read data from</dd>
 The number of bytes to be read</dd>
 <dd>
 <b>*dataBuffer - <i>uint8_t</i></b><br/>
-An array to stire the read data</dd>
+An array to store the read data</dd>
 
 <dt>Returns:</dt>
 <dd>
@@ -392,5 +392,130 @@ The number of unread bytes
 <dd>
 <b><i>uint8_t</i></b></br>
 First unread byte of the internal buffer
+</dd>
+</dl> 
+
+
+## Low-level methods
+
+### I2c.\_start()
+<dl>
+<dt>Description:</dt>
+<dd>Sends out a Start Condition. This puts all slave devices on notice that a transmission is about to start. This function incorporates the timeOut function.</dd>
+    
+<dt>Parameters:</dt>
+<dd>none</dd>
+
+<dt>Returns:</dt>
+<dd>
+<b><i>uint8_t</i></b></br>
+<i>0:</i> The start condition was successfully sent</br>
+<i>1:</i> The function timed out</br>
+<i>2 - 0xFF:</i> See the datasheet
+</dd>
+</dl> 
+
+### I2c.\_sendAddress(i2cAddress)
+<dl>
+<dt>Description:</dt>
+<dd>Sends out the address byte. The address byte's first 7 bits are the 7-bit address of the Slave you wish to communicate with, the last bit specifies if you wish to write or read to that slave, 0 = write & 1 = read.</dd>
+    
+<dt>Parameters:</dt>
+<dd>
+<b>i2cAddress - <i>uint8_t</i></b><br/>
+The address byte you wish to send</dd>
+
+<dt>Returns:</dt>
+<dd>
+<b><i>uint8_t</i></b></br>
+<i>0:</i> The address byte was successfully sent</br>
+<i>1:</i> The function timed out</br>
+<i>2 - 0xFF:</i> See the datasheet
+</dd>
+</dl> 
+
+
+### I2c.\_sendByte(i2cData)
+<dl>
+<dt>Description:</dt>
+<dd>Sends out a byte of data to the slave.</dd>
+    
+<dt>Parameters:</dt>
+<dd>
+<b>i2cData - <i>uint8_t</i></b><br/>
+The data byte you wish to send</dd>
+
+<dt>Returns:</dt>
+<dd>
+<b><i>uint8_t</i></b></br>
+<i>0:</i> The data byte was successfully sent</br>
+<i>1:</i> The function timed out</br>
+<i>2 - 0xFF:</i> See the datasheet
+</dd>
+</dl> 
+
+### I2c.\_receiveByte(ack)
+<dl>
+<dt>Description:</dt>
+<dd>Receives a byte from the slave. The ack parameter specifies whether or not to send an acknowledge signal after receiving it. If it is the last byte you want to receive it must be 0, so that the slave will stop transmitting and allow the master to send a stop.</dd>
+    
+<dt>Parameters:</dt>
+<dd>
+<b>ack - <i>uint8_t</i></b><br/>
+    Whether or not you want the master to acknowledge the receipt of the data byte. If this is the last byte being received, do not acknowledge.<br/>
+<i>0:</i> Do not send an ACK signal on receipt<br/>
+<i>1 - 0xFF:</i> Send an ACK signal on receipt<br/>
+</dd>
+
+<dt>Returns:</dt>
+<dd>
+<b><i>uint8_t</i></b></br>
+<i>0:</i> The data byte was successfully received</br>
+<i>1:</i> The function timed out</br>
+<i>2 - 0xFF:</i> See the datasheet
+</dd>
+</dl> 
+
+### I2c.\_receiveByte(ack, \*target)
+<dl>
+<dt>Description:</dt>
+<dd>Receives a byte from the slave. The ack parameter specifies whether or not to send an acknowledge signal after receiving it. If it is the last byte you want to receive it must be 0, so that the slave will stop transmitting and allow the master to send a stop.</dd>
+    
+<dt>Parameters:</dt>
+<dd>
+<b>ack - <i>uint8_t</i></b><br/>
+    Whether or not you want the master to acknowledge the receipt of the data byte. If this is the last byte being received, do not acknowledge.<br/>
+<i>0:</i> Do not send an ACK signal on receipt<br/>
+<i>1 - 0xFF:</i> Send an ACK signal on receipt<br/>
+</dd>
+<dd>
+<b>*target - <i>uint8_t</i></b><br/>
+    A byte to store the received data.
+</dd>
+
+<dt>Returns:</dt>
+<dd>
+<b><i>uint8_t</i></b></br>
+<i>0:</i> The data byte was successfully received</br>
+<i>6:</i> The function timed out</br>
+<i>1 - 5 and 7 - 0xFF:</i> See the datasheet
+</dd>
+</dl> 
+
+
+### I2c.\_stop()
+<dl>
+<dt>Description:</dt>
+<dd>Send out a stop condition</dd>
+    
+<dt>Parameters:</dt>
+<dd>none</dd>
+
+<dt>Returns:</dt>
+<dd>
+<b><i>uint8_t</i></b></br>
+<i>0:</i> The stop condition was successfully sent</br>
+<i>1:</i> The function timed out</br>
+<i>2 - 0xFF:</i> See the datasheet
 </dd>
 </dl> 
