@@ -557,9 +557,388 @@ uint8_t I2C::read(uint8_t address, uint8_t registerAddress, uint8_t numberBytes,
   return(returnStatus);
 }
 
+////////// 16-Bit Methods ///////////
 
-/////////////// Private Methods ////////////////////////////////////////
-
+//These functions will be used to write to Slaves that take 16-bit addresses
+uint8_t I2C::write16(uint8_t address, uint16_t registerAddress)
+{
+  returnStatus = 0;
+  returnStatus = start();
+  if (returnStatus)
+  {
+    return (returnStatus);
+  }
+  returnStatus = sendAddress(SLA_W(address));
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (2);
+    }
+    return (returnStatus);
+  }
+  //Send MSB of register address
+  returnStatus = sendByte(registerAddress >> 8);
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
+  }
+  //Send LSB of register address
+  returnStatus = sendByte(registerAddress & 0xFF);
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
+  }
+  returnStatus = stop();
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (7);
+    }
+    return (returnStatus);
+  }
+  return (returnStatus);
+}
+uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, uint8_t data)
+{
+  returnStatus = 0;
+  returnStatus = start();
+  if (returnStatus)
+  {
+    return (returnStatus);
+  }
+  returnStatus = sendAddress(SLA_W(address));
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (2);
+    }
+    return (returnStatus);
+  }
+  //Send MSB of register address
+  returnStatus = sendByte(registerAddress >> 8);
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
+  }
+  //Send LSB of register address
+  returnStatus = sendByte(registerAddress & 0xFF);
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
+  }
+  returnStatus = sendByte(data);
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
+  }
+  returnStatus = stop();
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (7);
+    }
+    return (returnStatus);
+  }
+  return (returnStatus);
+}
+uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, char *data)
+{
+  uint8_t bufferLength = strlen(data);
+  returnStatus = 0;
+  returnStatus = write16(address, registerAddress, (uint8_t *)data, bufferLength);
+  return (returnStatus);
+}
+uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, uint8_t *data, uint8_t numberBytes)
+{
+  returnStatus = 0;
+  returnStatus = start();
+  if (returnStatus)
+  {
+    return (returnStatus);
+  }
+  returnStatus = sendAddress(SLA_W(address));
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (2);
+    }
+    return (returnStatus);
+  }
+  //Send MSB of register address
+  returnStatus = sendByte(registerAddress >> 8);
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
+  }
+  //Send LSB of register address
+  returnStatus = sendByte(registerAddress & 0xFF);
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
+  }
+  for (uint8_t i = 0; i < numberBytes; i++)
+  {
+    returnStatus = sendByte(data[i]);
+    if (returnStatus)
+    {
+      if (returnStatus == 1)
+      {
+        return (3);
+      }
+      return (returnStatus);
+    }
+  }
+  returnStatus = stop();
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (7);
+    }
+    return (returnStatus);
+  }
+  return (returnStatus);
+}
+//These functions will be used to read from Slaves that take 16-bit addresses
+uint8_t I2C::read16(uint8_t address, uint16_t registerAddress, uint8_t numberBytes)
+{
+  bytesAvailable = 0;
+  bufferIndex = 0;
+  if (numberBytes == 0)
+  {
+    numberBytes++;
+  }
+  nack = numberBytes - 1;
+  returnStatus = 0;
+  returnStatus = start();
+  if (returnStatus)
+  {
+    return (returnStatus);
+  }
+  returnStatus = sendAddress(SLA_W(address));
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (2);
+    }
+    return (returnStatus);
+  }
+  //Send MSB of register address
+  returnStatus = sendByte(registerAddress >> 8);
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
+  }
+  //Send LSB of register address
+  returnStatus = sendByte(registerAddress & 0xFF);
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
+  }
+  returnStatus = start();
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (4);
+    }
+    return (returnStatus);
+  }
+  returnStatus = sendAddress(SLA_R(address));
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (5);
+    }
+    return (returnStatus);
+  }
+  for (uint8_t i = 0; i < numberBytes; i++)
+  {
+    if (i == nack)
+    {
+      returnStatus = receiveByte(0);
+      if (returnStatus == 1)
+      {
+        return (6);
+      }
+      if (returnStatus != MR_DATA_NACK)
+      {
+        return (returnStatus);
+      }
+    }
+    else
+    {
+      returnStatus = receiveByte(1);
+      if (returnStatus == 1)
+      {
+        return (6);
+      }
+      if (returnStatus != MR_DATA_ACK)
+      {
+        return (returnStatus);
+      }
+    }
+    data[i] = TWDR;
+    bytesAvailable = i + 1;
+    totalBytes = i + 1;
+  }
+  returnStatus = stop();
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (7);
+    }
+    return (returnStatus);
+  }
+  return (returnStatus);
+}
+uint8_t I2C::read16(uint8_t address, uint16_t registerAddress, uint8_t numberBytes, uint8_t *dataBuffer)
+{
+  bytesAvailable = 0;
+  bufferIndex = 0;
+  if (numberBytes == 0)
+  {
+    numberBytes++;
+  }
+  nack = numberBytes - 1;
+  returnStatus = 0;
+  returnStatus = start();
+  if (returnStatus)
+  {
+    return (returnStatus);
+  }
+  returnStatus = sendAddress(SLA_W(address));
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (2);
+    }
+    return (returnStatus);
+  }
+  //Send MSB of register address
+  returnStatus = sendByte(registerAddress >> 8);
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
+  }
+  //Send LSB of register address
+  returnStatus = sendByte(registerAddress & 0xFF);
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (3);
+    }
+    return (returnStatus);
+  }
+  returnStatus = start();
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (4);
+    }
+    return (returnStatus);
+  }
+  returnStatus = sendAddress(SLA_R(address));
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (5);
+    }
+    return (returnStatus);
+  }
+  for (uint8_t i = 0; i < numberBytes; i++)
+  {
+    if (i == nack)
+    {
+      returnStatus = receiveByte(0);
+      if (returnStatus == 1)
+      {
+        return (6);
+      }
+      if (returnStatus != MR_DATA_NACK)
+      {
+        return (returnStatus);
+      }
+    }
+    else
+    {
+      returnStatus = receiveByte(1);
+      if (returnStatus == 1)
+      {
+        return (6);
+      }
+      if (returnStatus != MR_DATA_ACK)
+      {
+        return (returnStatus);
+      }
+    }
+    dataBuffer[i] = TWDR;
+    bytesAvailable = i + 1;
+    totalBytes = i + 1;
+  }
+  returnStatus = stop();
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      return (7);
+    }
+    return (returnStatus);
+  }
+  return (returnStatus);
+}
 
 uint8_t I2C::start()
 {
@@ -726,6 +1105,8 @@ uint8_t I2C::stop()
   }
   return(0);
 }
+
+/////////////// Private Methods ////////////////////////////////////////
 
 void I2C::lockUp()
 {
