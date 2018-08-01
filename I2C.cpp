@@ -1091,7 +1091,8 @@ uint8_t I2C::read16(uint8_t address, uint16_t registerAddress, uint8_t numberByt
   return (returnStatus);
 }
 
-uint8_t I2C::start()
+//////////// LOW-LEVEL METHODS (No need to use them if the device uses normal register protocal)
+uint8_t I2C::_start()
 {
   unsigned long startingTime = millis();
   TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
@@ -1120,7 +1121,7 @@ uint8_t I2C::start()
   return (TWI_STATUS);
 }
 
-uint8_t I2C::sendAddress(uint8_t i2cAddress)
+uint8_t I2C::_sendAddress(uint8_t i2cAddress)
 {
   TWDR = i2cAddress;
   unsigned long startingTime = millis();
@@ -1154,7 +1155,7 @@ uint8_t I2C::sendAddress(uint8_t i2cAddress)
   }
 }
 
-uint8_t I2C::sendByte(uint8_t i2cData)
+uint8_t I2C::_sendByte(uint8_t i2cData)
 {
   TWDR = i2cData;
   unsigned long startingTime = millis();
@@ -1188,7 +1189,7 @@ uint8_t I2C::sendByte(uint8_t i2cData)
   }
 }
 
-uint8_t I2C::receiveByte(uint8_t ack)
+uint8_t I2C::_receiveByte(uint8_t ack)
 {
   unsigned long startingTime = millis();
   if (ack)
@@ -1220,7 +1221,7 @@ uint8_t I2C::receiveByte(uint8_t ack)
   return (TWI_STATUS);
 }
 
-uint8_t I2C::receiveByte(uint8_t ack, uint8_t *target)
+uint8_t I2C::_receiveByte(uint8_t ack, uint8_t *target)
 {
   uint8_t stat = I2C::receiveByte(ack);
   if (stat == 1)
@@ -1248,7 +1249,7 @@ uint8_t I2C::receiveByte(uint8_t ack, uint8_t *target)
   return 0;
 }
 
-uint8_t I2C::stop()
+uint8_t I2C::_stop()
 {
   unsigned long startingTime = millis();
   TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);

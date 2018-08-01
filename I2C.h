@@ -118,12 +118,12 @@ public:
   uint8_t read16(uint8_t, uint16_t, uint8_t, uint8_t *);
 
   //Low-level methods
-  uint8_t start();
-  uint8_t sendAddress(uint8_t);
-  uint8_t sendByte(uint8_t);
-  uint8_t receiveByte(uint8_t);
-  uint8_t receiveByte(uint8_t, uint8_t *target);
-  uint8_t stop();
+  uint8_t _start();
+  uint8_t _sendAddress(uint8_t);
+  uint8_t _sendByte(uint8_t);
+  uint8_t _receiveByte(uint8_t);
+  uint8_t _receiveByte(uint8_t, uint8_t *target);
+  uint8_t _stop();
 
 private:
   void lockUp();
