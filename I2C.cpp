@@ -329,6 +329,53 @@ uint8_t I2C::write(uint8_t address, uint8_t registerAddress, char *data)
   return (returnStatus);
 }
 
+uint8_t I2C::write(uint8_t address, uint8_t registerAddress, uint16_t data)
+{
+  //Array to hold the 2 bytes that will be written to the register
+  uint8_t writeBytes[2];
+  returnStatus = 0;
+
+  writeBytes[0] = (data >> 8) & 0xFF; //MSB
+  writeBytes[1] = data & 0xFF;        //LSB
+
+  returnStatus = write(address, registerAddress, writeBytes, 2);
+  return (returnStatus);
+}
+
+uint8_t I2C::write(uint8_t address, uint8_t registerAddress, uint32_t data)
+{
+  //Array to hold the 4 bytes that will be written to the register
+  uint8_t writeBytes[4];
+  returnStatus = 0;
+
+  writeBytes[0] = (data >> 24) & 0xFF; //MSB
+  writeBytes[1] = (data >> 16) & 0xFF;
+  writeBytes[2] = (data >> 8) & 0xFF;
+  writeBytes[3] = data & 0xFF; //LSB
+
+  returnStatus = write(address, registerAddress, writeBytes, 4);
+  return (returnStatus);
+}
+
+uint8_t I2C::write(uint8_t address, uint8_t registerAddress, uint64_t data)
+{
+  //Array to hold the 8 bytes that will be written to the register
+  uint8_t writeBytes[8];
+  returnStatus = 0;
+
+  writeBytes[0] = (data >> 56) & 0xFF; //MSB
+  writeBytes[1] = (data >> 48) & 0xFF;
+  writeBytes[2] = (data >> 40) & 0xFF;
+  writeBytes[3] = (data >> 32) & 0xFF;
+  writeBytes[4] = (data >> 24) & 0xFF;
+  writeBytes[5] = (data >> 16) & 0xFF;
+  writeBytes[6] = (data >> 8) & 0xFF;
+  writeBytes[7] = data & 0xFF; //LSB
+
+  returnStatus = write(address, registerAddress, writeBytes, 8);
+  return (returnStatus);
+}
+
 uint8_t I2C::write(uint8_t address, uint8_t registerAddress, uint8_t *data, uint8_t numberBytes)
 {
   returnStatus = 0;
@@ -881,6 +928,52 @@ uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, uint8_t *data, u
     }
     return (returnStatus);
   }
+  return (returnStatus);
+}
+uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, uint16_t data)
+{
+  //Array to hold the 2 bytes that will be written to the register
+  uint8_t writeBytes[2];
+  returnStatus = 0;
+
+  writeBytes[0] = (data >> 8) & 0xFF; //MSB
+  writeBytes[1] = data & 0xFF;        //LSB
+
+  returnStatus = write16(address, registerAddress, writeBytes, 2);
+  return (returnStatus);
+}
+
+uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, uint32_t data)
+{
+  //Array to hold the 4 bytes that will be written to the register
+  uint8_t writeBytes[4];
+  returnStatus = 0;
+
+  writeBytes[0] = (data >> 24) & 0xFF; //MSB
+  writeBytes[1] = (data >> 16) & 0xFF;
+  writeBytes[2] = (data >> 8) & 0xFF;
+  writeBytes[3] = data & 0xFF; //LSB
+
+  returnStatus = write16(address, registerAddress, writeBytes, 4);
+  return (returnStatus);
+}
+
+uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, uint64_t data)
+{
+  //Array to hold the 8 bytes that will be written to the register
+  uint8_t writeBytes[8];
+  returnStatus = 0;
+
+  writeBytes[0] = (data >> 56) & 0xFF; //MSB
+  writeBytes[1] = (data >> 48) & 0xFF;
+  writeBytes[2] = (data >> 40) & 0xFF;
+  writeBytes[3] = (data >> 32) & 0xFF;
+  writeBytes[4] = (data >> 24) & 0xFF;
+  writeBytes[5] = (data >> 16) & 0xFF;
+  writeBytes[6] = (data >> 8) & 0xFF;
+  writeBytes[7] = data & 0xFF; //LSB
+
+  returnStatus = write16(address, registerAddress, writeBytes, 8);
   return (returnStatus);
 }
 //These functions will be used to read from Slaves that take 16-bit addresses
