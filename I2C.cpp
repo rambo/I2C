@@ -75,17 +75,8 @@ I2C::I2C()
 
 void I2C::begin()
 {
-#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) || defined(__AVR_ATmega328P__)
-  // activate internal pull-ups for twi
-  // as per note from atmega8 manual pg167
-  sbi(PORTC, 4);
-  sbi(PORTC, 5);
-#else
-  // activate internal pull-ups for twi
-  // as per note from atmega128 manual pg204
-  sbi(PORTD, 0);
-  sbi(PORTD, 1);
-#endif
+  pullup(1);
+
   // initialize twi prescaler and bit rate
   cbi(TWSR, TWPS0);
   cbi(TWSR, TWPS1);
@@ -120,11 +111,16 @@ void I2C::pullup(uint8_t activate)
 {
   if (activate)
   {
-#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) || defined(__AVR_ATmega328P__)
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328PB__)
     // activate internal pull-ups for twi
     // as per note from atmega8 manual pg167
     sbi(PORTC, 4);
     sbi(PORTC, 5);
+#elif defined(__AVR_ATmega644__) || defined(__AVR_ATmega644P__)
+    // activate internal pull-ups for twi
+    // as per note from atmega644p manual pg108
+    sbi(PORTC, 0);
+    sbi(PORTC, 1);
 #else
     // activate internal pull-ups for twi
     // as per note from atmega128 manual pg204
@@ -134,11 +130,16 @@ void I2C::pullup(uint8_t activate)
   }
   else
   {
-#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) || defined(__AVR_ATmega328P__)
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega8__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328PB__)
     // deactivate internal pull-ups for twi
     // as per note from atmega8 manual pg167
     cbi(PORTC, 4);
     cbi(PORTC, 5);
+#elif defined(__AVR_ATmega644__) || defined(__AVR_ATmega644P__)
+    // deactivate internal pull-ups for twi
+    // as per note from atmega644p manual pg108
+    cbi(PORTC, 0);
+    cbi(PORTC, 1);
 #else
     // deactivate internal pull-ups for twi
     // as per note from atmega128 manual pg204
