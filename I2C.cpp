@@ -435,6 +435,7 @@ uint8_t I2C::read(uint8_t address, uint8_t numberBytes)
 {
   bytesAvailable = 0;
   bufferIndex = 0;
+  numberBytes = min(numberBytes, MAX_BUFFER_SIZE);
   if (numberBytes == 0)
   {
     numberBytes++;
@@ -507,6 +508,7 @@ uint8_t I2C::read(uint8_t address, uint8_t registerAddress, uint8_t numberBytes)
 {
   bytesAvailable = 0;
   bufferIndex = 0;
+  numberBytes = min(numberBytes, MAX_BUFFER_SIZE);
   if (numberBytes == 0)
   {
     numberBytes++;
@@ -981,6 +983,7 @@ uint8_t I2C::read16(uint8_t address, uint16_t registerAddress, uint8_t numberByt
 {
   bytesAvailable = 0;
   bufferIndex = 0;
+  numberBytes = min(numberBytes, MAX_BUFFER_SIZE);
   if (numberBytes == 0)
   {
     numberBytes++;
