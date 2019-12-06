@@ -321,11 +321,11 @@ uint8_t I2C::write(int address, int registerAddress, int data)
   return (write((uint8_t)address, (uint8_t)registerAddress, (uint8_t)data));
 }
 
-uint8_t I2C::write(uint8_t address, uint8_t registerAddress, char *data)
+uint8_t I2C::write(uint8_t address, uint8_t registerAddress, const char *data)
 {
   uint8_t bufferLength = strlen(data);
   returnStatus = 0;
-  returnStatus = write(address, registerAddress, (uint8_t *)data, bufferLength);
+  returnStatus = write(address, registerAddress, (const uint8_t *)data, bufferLength);
   return (returnStatus);
 }
 
@@ -376,7 +376,7 @@ uint8_t I2C::write(uint8_t address, uint8_t registerAddress, uint64_t data)
   return (returnStatus);
 }
 
-uint8_t I2C::write(uint8_t address, uint8_t registerAddress, uint8_t *data, uint8_t numberBytes)
+uint8_t I2C::write(uint8_t address, uint8_t registerAddress, const uint8_t *data, uint8_t numberBytes)
 {
   returnStatus = 0;
   returnStatus = _start();
@@ -863,14 +863,14 @@ uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, uint8_t data)
   }
   return (returnStatus);
 }
-uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, char *data)
+uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, const char *data)
 {
   uint8_t bufferLength = strlen(data);
   returnStatus = 0;
-  returnStatus = write16(address, registerAddress, (uint8_t *)data, bufferLength);
+  returnStatus = write16(address, registerAddress, (const uint8_t *)data, bufferLength);
   return (returnStatus);
 }
-uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, uint8_t *data, uint8_t numberBytes)
+uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, const uint8_t *data, uint8_t numberBytes)
 {
   returnStatus = 0;
   returnStatus = _start();
