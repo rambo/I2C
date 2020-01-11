@@ -99,11 +99,11 @@ public:
   uint8_t write(int, int);
   uint8_t write(uint8_t, uint8_t, uint8_t);
   uint8_t write(int, int, int);
-  uint8_t write(uint8_t, uint8_t, char *);
+  uint8_t write(uint8_t, uint8_t, const char *);
   uint8_t write(uint8_t, uint8_t, uint16_t); //Will write 2 bytes
   uint8_t write(uint8_t, uint8_t, uint32_t); //Will write 4 bytes
   uint8_t write(uint8_t, uint8_t, uint64_t); //Will write 8 bytes
-  uint8_t write(uint8_t, uint8_t, uint8_t *, uint8_t);
+  uint8_t write(uint8_t, uint8_t, const uint8_t *, uint8_t);
   uint8_t read(uint8_t, uint8_t);
   uint8_t read(int, int);
   uint8_t read(uint8_t, uint8_t, uint8_t);
@@ -114,11 +114,11 @@ public:
   //These functions will be used to write to Slaves that take 16-bit addresses
   uint8_t write16(uint8_t, uint16_t);
   uint8_t write16(uint8_t, uint16_t, uint8_t);
-  uint8_t write16(uint8_t, uint16_t, char *);
+  uint8_t write16(uint8_t, uint16_t, const char *);
   uint8_t write16(uint8_t, uint16_t, uint16_t); //Will write 2 bytes
   uint8_t write16(uint8_t, uint16_t, uint32_t); //Will write 4 bytes
   uint8_t write16(uint8_t, uint16_t, uint64_t); //Will write 8 bytes
-  uint8_t write16(uint8_t, uint16_t, uint8_t *, uint8_t);
+  uint8_t write16(uint8_t, uint16_t, const uint8_t *, uint8_t);
   //These functions will be used to read from Slaves that take 16-bit addresses
   uint8_t read16(uint8_t, uint16_t, uint8_t);
   uint8_t read16(uint8_t, uint16_t, uint8_t, uint8_t *);
