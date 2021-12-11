@@ -665,7 +665,7 @@ uint8_t I2C::read(uint8_t address, uint8_t numberBytes, uint8_t *dataBuffer)
   return (returnStatus);
 }
 
-uint8_t I2C::read(uint8_t address, uint16_t numberBytes, uint8_t *dataBuffer)
+uint8_t I2C::readex(uint8_t address, uint16_t numberBytes, uint8_t *dataBuffer)
 {
   bytesAvailable = 0;
   bufferIndex = 0;
@@ -824,7 +824,7 @@ uint8_t I2C::read(uint8_t address, uint8_t registerAddress, uint8_t numberBytes,
   return (returnStatus);
 }
 
-uint8_t I2C::read(uint8_t address, uint8_t registerAddress, uint16_t numberBytes, uint8_t *dataBuffer)
+uint8_t I2C::readex(uint8_t address, uint8_t registerAddress, uint16_t numberBytes, uint8_t *dataBuffer)
 {
   bytesAvailable = 0;
   bufferIndex = 0;
