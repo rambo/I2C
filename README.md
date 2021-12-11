@@ -283,7 +283,7 @@ Unlike the Wire library the read operation will not return the number of bytes r
 <dd>Initiate a read operation from the current position of slave register pointer. The bytes will be stored in the dataBuffer. As a side note there is a maximum of 255 bytes that may be received unlike the Wire library which has a 32 byte restriction.</dd>
     </br>
     </br>
-    <i><b>NOTE:</b> For reading more bytes (up to 65535) use <b>I2c.readex(address, numberBytes, \*dataBuffer)</b>. It is identical except numberBytes is a uint16_t</i></dd>
+    <i><b>NOTE:</b> For reading more bytes (up to 65535) use <b>I2c.readex(address, numberBytes, *dataBuffer)</b>. It is identical except numberBytes is a uint16_t</i></dd>
     
 <dt>Parameters:</dt>
 <dd>
@@ -356,8 +356,8 @@ Unlike the Wire library the read operation will not return the number of bytes r
 <dd>Initiate a write operation to set the pointer to the registerAddress, then sending a repeated start (not a stop then start) and store the number of bytes in the dataBuffer. As a side note there is a maximum of 255 bytes that may be received unlike the Wire library which has a 32 byte restriction.</dd>
     </br>
     </br>
-    <i><b>NOTE:</b> For devices with 16-bit register addresses use <b>I2c.read16(address, registerAddress, numberBytes, \*dataBuffer)</b>. It is identical except registerAddress is a uint16_t</i></dd>
-    <i><b>NOTE:</b> For reading more bytes (up to 65535) use <b>I2c.readex(address, registerAddress, numberBytes, \*dataBuffer)</b>. It is identical except numberBytes is a uint16_t</i></dd>
+    <i><b>NOTE:</b> For devices with 16-bit register addresses use <b>I2c.read16(address, registerAddress, numberBytes, *dataBuffer)</b>. It is identical except registerAddress is a uint16_t</i></dd></br>
+    <i> For reading more bytes (up to 65535) use <b>I2c.readex(address, registerAddress, numberBytes, *dataBuffer)</b>. It is identical except numberBytes is a uint16_t</i></dd>
     
 <dt>Parameters:</dt>
 <dd>
