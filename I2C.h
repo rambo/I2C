@@ -109,7 +109,9 @@ public:
   uint8_t read(uint8_t, uint8_t, uint8_t);
   uint8_t read(int, int, int);
   uint8_t read(uint8_t, uint8_t, uint8_t *);
+  uint8_t readex(uint8_t, uint16_t, uint8_t *);//overload for more than 255 bytes
   uint8_t read(uint8_t, uint8_t, uint8_t, uint8_t *);
+  uint8_t readex(uint8_t, uint8_t, uint16_t, uint8_t *);//overload for more than 255 bytes
 
   //These functions will be used to write to Slaves that take 16-bit addresses
   uint8_t write16(uint8_t, uint16_t);
