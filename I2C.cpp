@@ -189,6 +189,35 @@ void I2C::scan()
   timeOutDelay = tempTime;
 }
 
+bool I2C::scanFor(uint8_t addr)
+{
+  uint16_t tempTime = timeOutDelay;
+  timeOut(80);
+  
+  returnStatus = 0;
+  returnStatus = _start();
+  if (!returnStatus)
+  {
+    returnStatus = _sendAddress(SLA_W(addr));
+  }
+  if (returnStatus)
+  {
+    if (returnStatus == 1)
+    {
+      timeOutDelay = tempTime;
+      return false;
+    }
+  }
+  else
+  {
+    return true;
+  }
+  _stop();
+  
+  timeOutDelay = tempTime;
+  return false;
+}
+
 uint8_t I2C::available()
 {
   return (bytesAvailable);
