@@ -93,6 +93,7 @@ public:
   void setSpeed(uint8_t);
   void pullup(uint8_t);
   void scan();
+  bool scanFor(uint8_t addr);
   uint8_t available();
   uint8_t receive();
   uint8_t write(uint8_t, uint8_t);
