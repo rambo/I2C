@@ -462,7 +462,7 @@ uint8_t I2C::write(int address, int registerAddress, int data)
  *          The 7 bit I2C slave address
  *      registerAddress - uint8_t
  *          Address of the register you wish to access (as per the datasheet)
- *      *data - char
+ *      data - const char*
  *          Array of characters
  *  Returns:
  *      uint8_t
@@ -550,7 +550,7 @@ uint8_t I2C::write(uint8_t address, uint8_t registerAddress, uint64_t data)
  *          The 7 bit I2C slave address
  *      registerAddress - uint8_t
  *          Address of the register you wish to access (as per the datasheet)
- *      *data - uint8_t
+ *      data - const uint8_t*
  *          Array of bytes
  *      numberBytes - uint8_t
  *          The number of bytes in the array to be sent
@@ -837,7 +837,7 @@ uint8_t I2C::read(int address, int registerAddress, int numberBytes)
  *          The 7 bit I2C slave address
  *      numberBytes - uint8_t
  *          The number of bytes to be read
- *      *dataBuffer - uint8_t
+ *      dataBuffer - uint8_t*
  *          Array to store the read data
  *  Returns:
  *      uint8_t
@@ -1004,7 +1004,7 @@ uint8_t I2C::readex(uint8_t address, uint16_t numberBytes, uint8_t *dataBuffer)
  *          Starting register address to read data from
  *      numberBytes - uint8_t
  *          The number of bytes to be read
- *      *dataBuffer - uint8_t
+ *      dataBuffer - uint8_t*
  *          An array to store the read data
  *  Returns:
  *      uint8_t
@@ -1459,8 +1459,7 @@ uint8_t I2C::write16(uint8_t address, uint16_t registerAddress, uint64_t data)
   return (returnStatus);
 }
 
-//These functions will be used to read from Slaves that take 16-bit register
-//addresses
+//These functions will be used to read from Slaves that take 16-bit addresses
 
 /*
  *  Same as I2c.read(address, registerAddress, numberBytes), but reads from a
